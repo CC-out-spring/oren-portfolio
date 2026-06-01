@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Folder Tab Label Preview</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 34px;
+      background:
+        radial-gradient(circle at 22% 16%, rgba(255, 154, 0, 0.2), transparent 30%),
+        radial-gradient(circle at 82% 18%, rgba(255, 255, 255, 0.09), transparent 24%),
+        #171717;
+      color: #f8efe4;
+      font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      letter-spacing: 0;
+    }
+
+    .stage {
+      width: min(980px, calc(100vw - 44px));
+    }
+
+    .title {
+      margin: 0 0 14px;
+      color: rgba(248, 239, 228, 0.78);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 1800 / 1368;
+      border-radius: 30px;
+      background: #fb9300;
+      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.38);
+    }
+
+    .cover {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .folder-label {
+      position: absolute;
+      top: 28px;
+      left: 30px;
+      z-index: 2;
+      width: min(42%, 360px);
+      min-width: 292px;
+      color: #24231f;
+      transform: rotate(-0.8deg);
+    }
+
+    .folder-label::before {
+      content: "";
+      position: absolute;
+      left: 12px;
+      top: 7px;
+      width: 100%;
+      height: calc(100% + 4px);
+      border-radius: 18px;
+      background: rgba(58, 42, 18, 0.2);
+      filter: blur(12px);
+      transform: rotate(1.5deg);
+    }
+
+    .folder-tab {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 72%;
+      height: 34px;
+      padding: 0 18px;
+      border-radius: 14px 19px 0 0;
+      background: rgba(34, 34, 32, 0.96);
+      color: rgba(248, 244, 232, 0.92);
+      font-family: "Courier New", ui-monospace, monospace;
+      font-size: 15px;
+      line-height: 1;
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .folder-tab::after {
+      content: "";
+      position: absolute;
+      right: -33px;
+      bottom: 0;
+      width: 48px;
+      height: 34px;
+      border-radius: 0 18px 0 0;
+      background: inherit;
+      clip-path: polygon(0 100%, 34% 0, 100% 0, 100% 100%);
+    }
+
+    .folder-body {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 4px;
+      padding: 13px 18px 14px;
+      border: 1px solid rgba(44, 39, 30, 0.26);
+      border-radius: 0 18px 18px 18px;
+      background:
+        linear-gradient(96deg, rgba(250, 243, 224, 0.93), rgba(250, 243, 224, 0.74)),
+        repeating-linear-gradient(0deg, rgba(55, 46, 31, 0.04) 0 1px, transparent 1px 5px);
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(10px) saturate(1.05);
+    }
+
+    .folder-body strong {
+      font-size: 21px;
+      font-weight: 780;
+      line-height: 1.15;
+      white-space: nowrap;
+    }
+
+    .folder-body span {
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.25;
+      opacity: 0.86;
+    }
+
+    .note {
+      margin: 12px 0 0;
+      color: rgba(248, 239, 228, 0.62);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 20px;
+      }
+
+      .folder-label {
+        top: 18px;
+        left: 18px;
+        min-width: 248px;
+        width: 70%;
+      }
+
+      .folder-tab {
+        height: 30px;
+        font-size: 13px;
+      }
+
+      .folder-body {
+        padding: 11px 14px 12px;
+      }
+
+      .folder-body strong {
+        font-size: 17px;
+      }
+
+      .folder-body span {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="stage">
+    <p class="title">左上角文件夹索引标签预览</p>
+    <section class="card">
+      <img class="cover" src="../assets/kuaishou-proposal-cover-v7.png" alt="">
+      <div class="folder-label">
+        <div class="folder-tab">
+          <span>001</span>
+          <span>campaign</span>
+        </div>
+        <div class="folder-body">
+          <strong>生活交“享”乐</strong>
+          <span>大广赛-广告策划类-国家级和山东省优秀奖</span>
+        </div>
+      </div>
+    </section>
+    <p class="note">这一版把信息收进左上角，减少底部遮挡；正式放进网页时可以继续按原卡片倾斜角度微调。</p>
+  </main>
+</body>
+</html>

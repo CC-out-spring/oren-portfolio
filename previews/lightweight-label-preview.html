@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lightweight Label Preview</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 30px;
+      background:
+        radial-gradient(circle at 16% 10%, rgba(255, 143, 0, 0.22), transparent 28%),
+        radial-gradient(circle at 84% 18%, rgba(255, 255, 255, 0.1), transparent 24%),
+        #171717;
+      color: #f8efe4;
+      font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      letter-spacing: 0;
+    }
+
+    .page {
+      width: min(1160px, calc(100vw - 36px));
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 18px;
+      font-size: 18px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .option-title {
+      margin: 0 0 8px;
+      color: rgba(248, 239, 228, 0.72);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 1800 / 1368;
+      border-radius: 22px;
+      background: #fb9300;
+      box-shadow: 0 22px 54px rgba(0, 0, 0, 0.34);
+    }
+
+    .cover {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .micro-label {
+      position: absolute;
+      z-index: 2;
+      color: rgba(37, 35, 31, 0.94);
+      letter-spacing: 0;
+      pointer-events: none;
+    }
+
+    .micro-label strong,
+    .micro-label span {
+      display: block;
+    }
+
+    .micro-label strong {
+      font-size: 16px;
+      line-height: 1.18;
+      font-weight: 780;
+    }
+
+    .micro-label span {
+      margin-top: 3px;
+      font-size: 10px;
+      line-height: 1.22;
+      font-weight: 700;
+      opacity: 0.8;
+    }
+
+    .corner-chip {
+      top: 22px;
+      left: 24px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 11px 8px 9px;
+      border-radius: 999px;
+      background: rgba(255, 246, 224, 0.76);
+      box-shadow: 0 8px 20px rgba(54, 35, 12, 0.14);
+      backdrop-filter: blur(9px) saturate(1.04);
+      transform: rotate(-0.8deg);
+    }
+
+    .corner-chip .index {
+      display: grid;
+      place-items: center;
+      min-width: 34px;
+      height: 24px;
+      border-radius: 999px;
+      background: rgba(36, 35, 32, 0.94);
+      color: rgba(248, 244, 232, 0.92);
+      font-family: "Courier New", ui-monospace, monospace;
+      font-size: 12px;
+      line-height: 1;
+    }
+
+    .corner-chip .copy strong {
+      font-size: 15px;
+    }
+
+    .corner-chip .copy span {
+      max-width: 236px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .hairline-caption {
+      top: 24px;
+      left: 26px;
+      width: min(44%, 282px);
+      padding: 4px 0 8px 13px;
+      border-left: 2px solid rgba(37, 35, 31, 0.76);
+      color: rgba(30, 30, 28, 0.92);
+      text-shadow: 0 1px 12px rgba(255, 242, 208, 0.55);
+    }
+
+    .hairline-caption::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(37, 35, 31, 0.52), transparent);
+    }
+
+    .hairline-caption span {
+      max-width: 272px;
+    }
+
+    .tape-note {
+      right: 22px;
+      top: 22px;
+      width: 226px;
+      padding: 9px 12px 10px;
+      border-radius: 10px;
+      background: rgba(30, 30, 28, 0.75);
+      color: rgba(255, 249, 232, 0.92);
+      font-family: "Courier New", ui-monospace, monospace;
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(8px);
+      transform: rotate(1deg);
+    }
+
+    .tape-note strong {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .tape-note span {
+      font-size: 10px;
+      color: rgba(255, 249, 232, 0.72);
+    }
+
+    .side-tag {
+      top: 24px;
+      left: 24px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 9px;
+      align-items: start;
+      padding: 0;
+      color: rgba(31, 30, 28, 0.92);
+    }
+
+    .side-tag .num {
+      writing-mode: vertical-rl;
+      padding: 7px 5px;
+      border-radius: 999px;
+      background: rgba(34, 34, 32, 0.92);
+      color: rgba(248, 244, 232, 0.88);
+      font-family: "Courier New", ui-monospace, monospace;
+      font-size: 10px;
+      line-height: 1;
+    }
+
+    .side-tag .copy {
+      max-width: 214px;
+      padding: 6px 10px 7px;
+      border: 1px solid rgba(255, 255, 255, 0.42);
+      border-radius: 11px;
+      background: rgba(255, 246, 224, 0.58);
+      box-shadow: 0 8px 18px rgba(54, 35, 12, 0.1);
+      backdrop-filter: blur(8px);
+    }
+
+    @media (max-width: 860px) {
+      body {
+        padding: 20px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <h1>更轻量的文字承载形式</h1>
+    <section class="grid">
+      <article>
+        <p class="option-title">A. 小胶囊角标</p>
+        <div class="card">
+          <img class="cover" src="../assets/kuaishou-proposal-cover-v7.png" alt="">
+          <div class="micro-label corner-chip">
+            <span class="index">001</span>
+            <span class="copy">
+              <strong>生活交“享”乐</strong>
+              <span>大广赛-广告策划类-国家级和山东省优秀奖</span>
+            </span>
+          </div>
+        </div>
+      </article>
+
+      <article>
+        <p class="option-title">B. 细线说明</p>
+        <div class="card">
+          <img class="cover" src="../assets/kuaishou-proposal-cover-v7.png" alt="">
+          <div class="micro-label hairline-caption">
+            <strong>生活交“享”乐</strong>
+            <span>大广赛-广告策划类-国家级和山东省优秀奖</span>
+          </div>
+        </div>
+      </article>
+
+      <article>
+        <p class="option-title">C. 右上黑色小纸条</p>
+        <div class="card">
+          <img class="cover" src="../assets/kuaishou-proposal-cover-v7.png" alt="">
+          <div class="micro-label tape-note">
+            <strong>生活交“享”乐</strong>
+            <span>大广赛 / 广告策划类 / 国家级和山东省优秀奖</span>
+          </div>
+        </div>
+      </article>
+
+      <article>
+        <p class="option-title">D. 竖向编号 + 小浮层</p>
+        <div class="card">
+          <img class="cover" src="../assets/kuaishou-proposal-cover-v7.png" alt="">
+          <div class="micro-label side-tag">
+            <span class="num">001</span>
+            <span class="copy">
+              <strong>生活交“享”乐</strong>
+              <span>大广赛-广告策划类-国家级和山东省优秀奖</span>
+            </span>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

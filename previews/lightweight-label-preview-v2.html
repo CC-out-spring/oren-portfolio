@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lightweight Label Preview v2</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 28px;
+      background:
+        radial-gradient(circle at 16% 10%, rgba(255, 143, 0, 0.2), transparent 28%),
+        #171717;
+      color: #f8efe4;
+      font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      letter-spacing: 0;
+    }
+
+    .page {
+      width: min(1120px, calc(100vw - 40px));
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 18px;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+      align-items: start;
+    }
+
+    .option-title {
+      margin: 0 0 8px;
+      color: rgba(248, 239, 228, 0.72);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 1800 / 1368;
+      border-radius: 22px;
+      background: #fb9300;
+      box-shadow: 0 22px 54px rgba(0, 0, 0, 0.34);
+    }
+
+    .cover {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .label {
+      position: absolute;
+      z-index: 2;
+      color: rgba(34, 33, 30, 0.94);
+      pointer-events: none;
+    }
+
+    .label strong,
+    .label span {
+      display: block;
+    }
+
+    .label strong {
+      font-size: 13px;
+      line-height: 1.12;
+      font-weight: 780;
+      white-space: nowrap;
+    }
+
+    .label span {
+      margin-top: 2px;
+      font-size: 9px;
+      line-height: 1.22;
+      font-weight: 700;
+      opacity: 0.76;
+    }
+
+    .edge-note {
+      top: 17px;
+      left: 18px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 7px;
+      align-items: start;
+      transform: rotate(-0.7deg);
+    }
+
+    .edge-note .index {
+      display: grid;
+      place-items: center;
+      width: 22px;
+      height: 38px;
+      border-radius: 999px;
+      background: rgba(34, 34, 32, 0.9);
+      color: rgba(248, 244, 232, 0.9);
+      font-family: "Courier New", ui-monospace, monospace;
+      font-size: 9px;
+      writing-mode: vertical-rl;
+    }
+
+    .edge-note .copy {
+      max-width: 176px;
+      padding: 7px 10px 8px;
+      border: 1px solid rgba(255, 255, 255, 0.36);
+      border-radius: 10px;
+      background: rgba(255, 247, 227, 0.54);
+      box-shadow: 0 8px 18px rgba(50, 34, 12, 0.1);
+      backdrop-filter: blur(8px) saturate(1.05);
+    }
+
+    .corner-min {
+      top: 18px;
+      left: 19px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      max-width: 238px;
+      padding: 7px 10px 8px;
+      border-radius: 13px;
+      background: rgba(255, 247, 227, 0.5);
+      box-shadow: 0 8px 18px rgba(50, 34, 12, 0.1);
+      backdrop-filter: blur(8px) saturate(1.04);
+      transform: rotate(-0.7deg);
+    }
+
+    .corner-min .mark {
+      color: rgba(34, 34, 32, 0.82);
+      font-family: "Courier New", ui-monospace, monospace;
+      font-size: 10px;
+      line-height: 1;
+    }
+
+    .line-tag {
+      top: 19px;
+      left: 20px;
+      width: 224px;
+      padding: 0 0 7px 10px;
+      border-left: 1px solid rgba(35, 34, 31, 0.5);
+      color: rgba(35, 34, 31, 0.9);
+      text-shadow: 0 1px 10px rgba(255, 244, 214, 0.7);
+    }
+
+    .line-tag::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 82px;
+      height: 1px;
+      background: rgba(35, 34, 31, 0.36);
+    }
+
+    .caption {
+      margin: 10px 0 0;
+      color: rgba(248, 239, 228, 0.58);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 920px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <h1>更收敛的轻量标签</h1>
+    <section class="grid">
+      <article>
+        <p class="option-title">A. 竖编号 + 半透明小浮层</p>
+        <div class="card">
+          <img class="cover" src="../assets/kuaishou-proposal-cover-v7.png" alt="">
+          <div class="label edge-note">
+            <span class="index">001</span>
+            <span class="copy">
+              <strong>生活交“享”乐</strong>
+              <span>大广赛 · 国家级 / 山东省优秀奖</span>
+            </span>
+          </div>
+        </div>
+        <p class="caption">信息够清楚，存在感最低，适合正式网页。</p>
+      </article>
+
+      <article>
+        <p class="option-title">B. 极简左上角</p>
+        <div class="card">
+          <img class="cover" src="../assets/kuaishou-proposal-cover-v7.png" alt="">
+          <div class="label corner-min">
+            <span class="mark">001</span>
+            <span>
+              <strong>生活交“享”乐</strong>
+              <span>大广赛 · 国家级 / 山东省优秀奖</span>
+            </span>
+          </div>
+        </div>
+        <p class="caption">更像作品卡片状态标，不会太“设计”。</p>
+      </article>
+
+      <article>
+        <p class="option-title">C. 只用细线承载</p>
+        <div class="card">
+          <img class="cover" src="../assets/kuaishou-proposal-cover-v7.png" alt="">
+          <div class="label line-tag">
+            <strong>生活交“享”乐</strong>
+            <span>大广赛 · 国家级 / 山东省优秀奖</span>
+          </div>
+        </div>
+        <p class="caption">最轻，但碰到复杂背景时可读性会不稳定。</p>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

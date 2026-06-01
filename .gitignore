@@ -1,0 +1,14 @@
+.DS_Store
+
+# Local debug screenshots and iteration exports kept out of GitHub Pages.
+/about-hover-*.png
+/connect-email-*.png
+/connect-hover-*.png
+/content-growth-*.png
+/debug-*.png
+/doodle-*.png
+/scroll-check-*.png
+/tours-dashboard-*.png
+/ueg3-location-screenshot.png
+/work-hover-*.png
+

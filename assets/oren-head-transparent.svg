@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520" fill="none">
+  <style>
+    .ink{stroke:#111;stroke-linecap:round;stroke-linejoin:round}
+    .red{stroke:#d94d3f;stroke-linecap:round;stroke-linejoin:round}
+    .green{stroke:#5d8f76;stroke-linecap:round;stroke-linejoin:round}
+    .blue{stroke:#49b9df;stroke-linecap:round;stroke-linejoin:round}
+  </style>
+  <path d="M184 224C211 143 316 96 442 112C545 125 628 201 649 306C663 381 622 473 559 489C514 501 486 470 506 425C530 369 583 357 570 314C552 253 496 202 409 188C330 175 255 195 184 224Z" fill="#101010"/>
+  <path d="M205 215C259 191 321 182 384 184C462 186 535 223 570 287" class="ink" stroke-width="17"/>
+  <path d="M187 222C168 258 155 289 145 327C138 353 118 377 116 397C113 418 149 419 165 425" class="ink" stroke-width="11"/>
+  <path d="M165 425C166 445 166 463 165 481" class="ink" stroke-width="11"/>
+  <path d="M177 226C165 247 154 272 147 300" class="ink" stroke-width="5"/>
+  <path d="M207 218C202 269 191 325 154 377" class="ink" stroke-width="8"/>
+  <path d="M520 299C489 322 468 350 462 390C458 417 467 440 493 448" class="ink" stroke-width="9"/>
+  <path d="M542 403C553 414 559 431 556 448" class="ink" stroke-width="8"/>
+
+  <g opacity=".36">
+    <path d="M228 228C305 195 421 199 519 253" class="ink" stroke-width="2.2"/>
+    <path d="M219 247C296 217 447 223 548 303" class="ink" stroke-width="2"/>
+    <path d="M209 269C313 230 452 250 557 342" class="ink" stroke-width="2"/>
+    <path d="M198 291C313 258 451 286 545 382" class="ink" stroke-width="2"/>
+    <path d="M194 315C297 288 411 307 500 409" class="ink" stroke-width="2"/>
+    <path d="M247 206C229 284 226 356 257 431" class="ink" stroke-width="1.8"/>
+    <path d="M302 190C274 270 274 365 320 452" class="ink" stroke-width="1.8"/>
+    <path d="M364 184C334 281 344 386 402 466" class="ink" stroke-width="1.8"/>
+    <path d="M425 193C399 282 414 380 472 451" class="ink" stroke-width="1.8"/>
+    <path d="M490 219C471 293 489 360 536 412" class="ink" stroke-width="1.8"/>
+  </g>
+
+  <path d="M141 304C127 277 143 247 173 253C205 259 206 313 178 330C158 342 145 329 141 304Z" class="blue" stroke-width="14"/>
+  <path d="M223 296C221 253 271 241 296 271C326 307 306 367 265 366C235 365 224 328 223 296Z" class="blue" stroke-width="14"/>
+  <path d="M204 300C213 297 218 297 224 299" class="blue" stroke-width="12"/>
+  <path d="M304 303C385 306 464 307 544 308" class="blue" stroke-width="11"/>
+  <path d="M541 308C555 308 564 306 573 302" class="blue" stroke-width="10"/>
+
+  <path d="M275 141C305 126 344 119 386 121C425 122 462 131 491 147" class="ink" stroke-width="6"/>
+  <path d="M298 138L340 102L386 137L383 184L302 184Z" fill="#fff"/>
+  <path d="M298 138L340 102L386 137L383 184L302 184Z" class="ink" stroke-width="4.5"/>
+  <path d="M287 140L340 94L396 139" class="ink" stroke-width="6"/>
+  <path d="M330 184L331 153L350 153L350 184" class="ink" stroke-width="3"/>
+
+  <path d="M473 132C478 98 496 70 526 52C557 34 594 39 616 64C641 92 637 132 609 154C576 180 522 172 491 145" class="green" stroke-width="5"/>
+  <path d="M545 174C544 132 545 88 548 46" class="ink" stroke-width="6"/>
+  <path d="M546 83C528 68 510 58 491 53" class="green" stroke-width="3"/>
+  <path d="M548 88C573 69 596 58 618 55" class="green" stroke-width="3"/>
+  <path d="M547 120C525 109 504 105 481 109" class="green" stroke-width="3"/>
+  <path d="M548 125C576 111 603 110 630 119" class="green" stroke-width="3"/>
+  <path d="M616 90C637 117 651 139 663 165" class="ink" stroke-width="2"/>
+  <path d="M663 165C675 175 681 190 678 207" class="red" stroke-width="2.5"/>
+  <path d="M662 207C677 213 694 208 704 195" class="red" stroke-width="4"/>
+  <path d="M679 207C676 217 671 226 665 233" class="red" stroke-width="3"/>
+  <circle cx="664" cy="187" r="7" fill="#111"/>
+
+  <path d="M236 147C215 145 198 153 186 168" class="green" stroke-width="3"/>
+  <path d="M202 168C200 151 194 137 184 126" class="green" stroke-width="3"/>
+  <path d="M218 165C220 151 228 138 240 128" class="green" stroke-width="3"/>
+  <circle cx="184" cy="124" r="5" fill="#d94d3f"/>
+  <circle cx="240" cy="126" r="5" fill="#d94d3f"/>
+  <circle cx="206" cy="143" r="4" fill="#d94d3f"/>
+</svg>

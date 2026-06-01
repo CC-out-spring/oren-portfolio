@@ -61,6 +61,8 @@
       document.title = config.meta.title;
     }
 
+    if (window.__OREN_APPLY_META__) window.__OREN_APPLY_META__();
+
     const description = config.meta && config.meta.description;
     if (!description) return;
 
@@ -739,7 +741,6 @@
     if (now - lastWorkNavigationAt < 260) return;
 
     lastWorkNavigationAt = now;
-    normalizeWorkLinks(document);
     window.requestAnimationFrame(scrollToWork);
   }
 
@@ -862,7 +863,6 @@
     workItems.forEach((item) => {
       item.dataset.orenNavHint = "work";
       item.setAttribute("aria-label", "Work, scroll down");
-      if (item.tagName === "A") normalizeWorkLink(item);
 
       if (item.dataset.orenNavHoverBound !== "true") {
         item.dataset.orenNavHoverBound = "true";
@@ -952,7 +952,6 @@
     replaceMeta();
     replaceText(root);
     replaceLinks(root);
-    normalizeWorkLinks(root);
     replaceImages(root);
     replaceContentGrowthBashpayCard(root);
     replaceContentGrowthLogisticsCard(root);
@@ -972,11 +971,15 @@
   function lockMeta() {
     if (!config.meta) return;
 
-    const update = () => replaceMeta();
+    const update = () => {
+      replaceMeta();
+      if (window.__OREN_APPLY_META__) window.__OREN_APPLY_META__();
+    };
     update();
     window.setTimeout(update, 250);
     window.setTimeout(update, 1000);
     window.setTimeout(update, 2500);
+    window.setTimeout(update, 5000);
   }
 
   function start() {
@@ -988,15 +991,16 @@
       document.documentElement.dataset.editableMirror = "ready";
     });
 
-    [0, 250, 1000, 2500].forEach((delay) => {
-      window.setTimeout(() => {
-        normalizeWorkLinks(document);
-        keepWorkRouteOnHome();
-      }, delay);
-    });
+    [0, 250, 1000, 2500].forEach((delay) => window.setTimeout(keepWorkRouteOnHome, delay));
 
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
+        if (mutation.type === "attributes" && mutation.target.nodeType === Node.ELEMENT_NODE) {
+          const target = mutation.target;
+          if (target.tagName === "IMG") replaceImages(target);
+          if (mutation.attributeName === "style") replaceFramerRemoteBackgrounds(target);
+        }
+
         mutation.addedNodes.forEach((node) => {
           if (node.nodeType === Node.ELEMENT_NODE) applyAll(node);
           if (node.nodeType === Node.TEXT_NODE) replaceText(node.parentNode || document.body);
@@ -1004,7 +1008,12 @@
       });
     });
 
-    observer.observe(document.body, { childList: true, subtree: true });
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["src", "srcset", "style"],
+      childList: true,
+      subtree: true,
+    });
   }
 
   bindWorkNavigationEvents();

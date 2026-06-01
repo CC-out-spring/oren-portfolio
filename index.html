@@ -4,10 +4,78 @@
 <html lang="en-ZA" data-editable-mirror="loading">
 <head>
     <meta charset="utf-8">
-    <style id="editable-prehide">html[data-editable-mirror="loading"] body{opacity:0!important}html[data-editable-mirror="ready"] body{opacity:1;transition:opacity 120ms ease}</style>
+    <script>
+      (() => {
+        const siteMeta = {
+          title: "Oren",
+          description: "Welcome to My World.",
+          url: "https://cc-out-spring.github.io/oren-portfolio/",
+        };
+
+        window.OREN_SITE_META = siteMeta;
+
+        const lockTitleProperty = () => {
+          const proto = Document && Document.prototype;
+          const descriptor = proto && Object.getOwnPropertyDescriptor(proto, "title");
+          if (!descriptor || !descriptor.configurable || typeof descriptor.set !== "function" || typeof descriptor.get !== "function") return;
+
+          try {
+            Object.defineProperty(proto, "title", {
+              configurable: true,
+              enumerable: descriptor.enumerable,
+              get() {
+                return descriptor.get.call(this);
+              },
+              set(value) {
+                descriptor.set.call(this, value === siteMeta.title ? value : siteMeta.title);
+              },
+            });
+          } catch (error) {
+            // Some browsers do not allow overriding document.title; the observer/timers below still cover them.
+          }
+        };
+
+        const setMeta = (selector, attribute, value) => {
+          const element = document.querySelector(selector);
+          if (element && element.getAttribute(attribute) !== value) {
+            element.setAttribute(attribute, value);
+          }
+        };
+
+        const applyMeta = () => {
+          if (document.title !== siteMeta.title) document.title = siteMeta.title;
+          const title = document.querySelector("title");
+          if (title && title.textContent !== siteMeta.title) title.textContent = siteMeta.title;
+
+          setMeta('meta[name="application-name"]', "content", siteMeta.title);
+          setMeta('meta[name="apple-mobile-web-app-title"]', "content", siteMeta.title);
+          setMeta('meta[property="og:title"]', "content", siteMeta.title);
+          setMeta('meta[name="twitter:title"]', "content", siteMeta.title);
+          setMeta('meta[name="description"]', "content", siteMeta.description);
+          setMeta('meta[property="og:description"]', "content", siteMeta.description);
+          setMeta('meta[name="twitter:description"]', "content", siteMeta.description);
+          setMeta('link[rel="canonical"]', "href", siteMeta.url);
+          setMeta('meta[property="og:url"]', "content", siteMeta.url);
+        };
+
+        window.__OREN_APPLY_META__ = applyMeta;
+        lockTitleProperty();
+        applyMeta();
+        document.documentElement.dataset.editableMirror = "ready";
+        ["readystatechange", "DOMContentLoaded", "load"].forEach((eventName) => {
+          window.addEventListener(eventName, applyMeta, { passive: true });
+        });
+        [50, 250, 1000, 2500, 5000].forEach((delay) => window.setTimeout(applyMeta, delay));
+
+        if (window.MutationObserver && document.head) {
+          const observer = new MutationObserver(applyMeta);
+          observer.observe(document.head, { attributes: true, childList: true, characterData: true, subtree: true });
+        }
+      })();
+    </script>
+    <style id="editable-prehide">html[data-editable-mirror="loading"] body{opacity:1!important}html[data-editable-mirror="ready"] body{opacity:1;transition:opacity 120ms ease}</style>
     
     
-    <script>try{if(localStorage.get("__framer_force_showing_editorbar_since")){const n=document.createElement("link");n.rel = "modulepreload";n.href="https://framer.com/edit/init.mjs";document.head.appendChild(n)}}catch(e){}</script>
     <!-- Start of headStart -->
     
     <!-- End of headStart -->
@@ -74,20 +142,6 @@
           return element.closest('[data-framer-name="Texts"] [data-framer-name="Work"]');
         };
 
-        const normalizeWorkLinks = (root = document) => {
-          const links = [
-            ...(root.matches && root.matches("a") ? [root] : []),
-            ...(root.querySelectorAll ? root.querySelectorAll("a") : []),
-          ];
-
-          links.forEach((link) => {
-            if (!isWorkNavLink(link)) return;
-            link.setAttribute("href", "#work");
-            link.removeAttribute("target");
-            link.dataset.orenWorkNav = "true";
-          });
-        };
-
         const scrollToWork = () => {
           const selectors = [
             '[data-framer-name="Value block"]',
@@ -123,13 +177,12 @@
           event.stopImmediatePropagation();
 
           const link = workElement.tagName === "A" ? workElement : workElement.closest("a");
-          if (link) link.setAttribute("href", "#work");
+          if (link) link.dataset.orenWorkNav = "true";
 
           const now = Date.now();
           if (now - lastWorkNavAt < 260) return;
 
           lastWorkNavAt = now;
-          normalizeWorkLinks();
           window.requestAnimationFrame(scrollToWork);
         };
 
@@ -138,14 +191,19 @@
           document.addEventListener(eventName, handleWorkNav, { capture: true, passive: false });
         });
 
-        const refreshWorkLinks = () => {
-          [0, 250, 1000, 2500].forEach((delay) => window.setTimeout(() => normalizeWorkLinks(), delay));
+        const keepWorkRouteOnHome = () => {
+          if (!isWorkHref(window.location.href)) return;
+
+          const cleanUrl = `${window.location.origin}${window.location.pathname}${window.location.search}`;
+          window.history.replaceState(window.history.state, document.title, cleanUrl);
+          window.requestAnimationFrame(scrollToWork);
         };
 
+        window.addEventListener("popstate", keepWorkRouteOnHome);
         if (document.readyState === "loading") {
-          document.addEventListener("DOMContentLoaded", refreshWorkLinks, { once: true });
+          document.addEventListener("DOMContentLoaded", keepWorkRouteOnHome, { once: true });
         } else {
-          refreshWorkLinks();
+          keepWorkRouteOnHome();
         }
       })();
     </script>
@@ -782,7 +840,6 @@
     <!-- End of headEnd -->
 </head>
 <body>
-    <script async src="https://events.framer.com/script?v=2" data-fid="198abe2b57321d50c5a32211820d17917c1df98345bbadc9dec647a6ccccfb18" data-no-nt></script>
     <!-- Start of bodyStart -->
     
     <!-- End of bodyStart -->
@@ -825,7 +882,7 @@
 </div>
     <script src="./editable-config.js?v=oren-tour-dashboard-clean-ordered-v64"></script>
     <script src="./framer-image-map.js?v=oren-local-assets-v1"></script>
-    <script src="./overrides.js?v=oren-card-image-match-fix-v72"></script>
+    <script src="./overrides.js?v=oren-title-speed-fix-v73"></script>
     <!-- Start of bodyEnd -->
     
     <!-- End of bodyEnd -->

@@ -4,7 +4,15 @@
   const linkMap = config.links || {};
   const galleryMap = config.galleries || {};
   const defaultGallerySpreadSize = 3;
-  const framerImageMap = window.OREN_FRAMER_IMAGE_MAP || {};
+  const blankAsset = "./assets-optimized/blank.svg";
+  const legacyFramerImageNeedle = "framerusercontent.com/images/";
+  const targetedImageMap = {
+    "aybhK1OWWsMUjIyA7Kj5iET0zE.png": "./assets-optimized/xiaobai-dongwuyuan-content-growth-v1.jpg?v=20260530-bashpay-v1",
+    "6rBYKVmILDjUMitcTXjMZ0SPM.png": "./assets-optimized/itg-real-estate-content-growth-v1.jpg?v=20260530-itg-v1",
+    "QvIk4OtR2xbSpy213Cwtbyw6Q.png": "./assets-optimized/content-growth-media-map-v1.webp?v=20260531-media-map-v1",
+    "CjJRxESsZDM96KjX4zi3ntiSl7c.png": "./assets-optimized/fitness-app-horizontal-clean-ordered.jpg?v=20260601-fitness-tour-v2",
+    "jkezJCVWvw8W2KInfhlRWQOlS4.png": "./assets-optimized/fitness-app-horizontal-lianna-composite.jpg?v=20260601-fitness-tour-v5",
+  };
   const imageMap = {
     "JnX4DQ93dVEHzTFGkUsZLNV4.png": "./assets-optimized/oren-side-icon-stamp-v1.webp",
     "RYvnMMGEz4Ds3BGL5W1lRp9GOCU.png": "./assets-optimized/oren-side-icon-bowl-v1.webp",
@@ -24,6 +32,16 @@
   let lastWorkNavigationAt = 0;
   let workRouteGuardInstalled = false;
 
+  function markOrenReady() {
+    document.documentElement.dataset.orenOverridesReady = "true";
+    if (window.__OREN_MARK_OVERRIDES_READY__) {
+      window.__OREN_MARK_OVERRIDES_READY__();
+    } else {
+      document.documentElement.dataset.editableMirror = "ready";
+    }
+    window.dispatchEvent(new CustomEvent("oren:overrides-ready"));
+  }
+
   function getGallerySpreadSize(gallery) {
     const size = Number(gallery && gallery.spreadSize) || defaultGallerySpreadSize;
     return Math.max(1, Math.min(size, defaultGallerySpreadSize));
@@ -34,10 +52,19 @@
     return fileName.replace(/\.[a-z0-9]+$/i, "");
   }
 
+  function normalizeAssetPath(value) {
+    return String(value || "")
+      .replace(window.location.origin, "")
+      .replace(window.location.pathname.replace(/\/[^/]*$/, "/"), "")
+      .replace(/^\.\//, "")
+      .split("#")[0];
+  }
+
   function imageSourceMatchesKey(image, key) {
     if (!image || !key) return false;
 
     const stem = getImageKeyStem(key);
+    const configuredTarget = imageMap[key] || targetedImageMap[key] || "";
     const values = [
       image.getAttribute("src") || "",
       image.getAttribute("srcset") || "",
@@ -45,7 +72,11 @@
       image.dataset.orenTargetedReplacementFor || "",
     ];
 
-    return values.some((value) => value.includes(key) || (stem && value.includes(stem)));
+    return values.some((value) => {
+      if (value.includes(key) || (stem && value.includes(stem))) return true;
+      if (!configuredTarget) return false;
+      return normalizeAssetPath(value).includes(normalizeAssetPath(configuredTarget));
+    });
   }
 
   function getScopedImages(root) {
@@ -103,7 +134,7 @@
   }
 
   function replaceImages(root) {
-    const entries = Object.entries(imageMap).filter(([from]) => from);
+    const entries = Object.entries({ ...targetedImageMap, ...imageMap }).filter(([from]) => from);
 
     (root || document).querySelectorAll("img").forEach((image) => {
       const src = image.getAttribute("src") || "";
@@ -151,46 +182,37 @@
         }
       });
 
-      replaceFramerRemoteImage(image);
+      removeLegacyFramerImage(image);
     });
 
-    replaceFramerRemoteBackgrounds(root);
+    removeLegacyFramerBackgrounds(root);
   }
 
-  function getFramerImageKey(value) {
-    if (!value || !value.includes("framerusercontent.com/images/")) return "";
+  function hasLegacyFramerImage(value) {
+    return String(value || "").includes(legacyFramerImageNeedle);
+  }
 
-    try {
-      const url = new URL(value.replace(/&amp;/g, "&"));
-      const fileName = url.pathname.split("/").pop() || "";
-      return url.search ? `${fileName}${url.search}` : fileName;
-    } catch (error) {
-      const match = value.match(/\/images\/([^"')\s,]+)/);
-      return match ? match[1].replace(/&amp;/g, "&") : "";
+  function removeLegacyFramerImage(image) {
+    const src = image.getAttribute("src") || "";
+    const srcset = image.getAttribute("srcset") || "";
+    if (!hasLegacyFramerImage(src) && !hasLegacyFramerImage(srcset)) return;
+
+    const wrapper = image.closest("[data-framer-background-image-wrapper]");
+    const named = image.closest("[data-framer-name]");
+    const keepAsBlank = named && /favicon|icon/i.test(named.getAttribute("data-framer-name") || "");
+
+    image.removeAttribute("srcset");
+    image.setAttribute("src", blankAsset);
+    image.dataset.orenLegacyFramerImage = "removed";
+    image.setAttribute("aria-hidden", "true");
+
+    if (!keepAsBlank) {
+      image.style.setProperty("opacity", "0", "important");
+      if (wrapper) wrapper.dataset.orenLegacyFramerImage = "removed";
     }
   }
 
-  function getLocalFramerImage(value) {
-    const key = getFramerImageKey(value);
-    if (!key) return "";
-
-    const fileName = key.split("?")[0];
-    return framerImageMap[key] || framerImageMap[fileName] || "";
-  }
-
-  function replaceFramerRemoteImage(image) {
-    const src = image.getAttribute("src") || "";
-    const srcset = image.getAttribute("srcset") || "";
-    const localSrc = getLocalFramerImage(src) || getLocalFramerImage(srcset);
-
-    if (!localSrc) return;
-
-    image.removeAttribute("srcset");
-    image.setAttribute("src", localSrc);
-    image.dataset.orenFramerRemoteImage = "localized";
-  }
-
-  function replaceFramerRemoteBackgrounds(root) {
+  function removeLegacyFramerBackgrounds(root) {
     const scope = root || document;
     const elements = [
       ...(scope.matches && scope.matches("[style*='framerusercontent.com/images/']") ? [scope] : []),
@@ -198,17 +220,8 @@
     ];
 
     elements.forEach((element) => {
-      const style = element.getAttribute("style") || "";
-      if (!style.includes("framerusercontent.com/images/")) return;
-
-      const nextStyle = style.replace(/https:\/\/framerusercontent\.com\/images\/[^"')\s,]+/g, (remoteUrl) => {
-        return getLocalFramerImage(remoteUrl) || remoteUrl;
-      });
-
-      if (nextStyle !== style) {
-        element.setAttribute("style", nextStyle);
-        element.dataset.orenFramerRemoteBackground = "localized";
-      }
+      element.style.setProperty("background-image", "none", "important");
+      element.dataset.orenLegacyFramerBackground = "removed";
     });
   }
 
@@ -221,7 +234,7 @@
       if (!isTargetImage) return;
 
       image.removeAttribute("srcset");
-      image.setAttribute("src", "./assets-optimized/xiaobai-dongwuyuan-content-growth-v1.jpg?v=20260530-bashpay-v1");
+      image.setAttribute("src", targetedImageMap[targetKey]);
       image.dataset.orenTargetedReplacementFor = targetKey;
       image.classList.add("oren-content-growth-bashpay-image");
 
@@ -242,7 +255,7 @@
       if (!isTargetImage) return;
 
       image.removeAttribute("srcset");
-      image.setAttribute("src", "./assets-optimized/itg-real-estate-content-growth-v1.jpg?v=20260530-itg-v1");
+      image.setAttribute("src", targetedImageMap[targetKey]);
       image.dataset.orenTargetedReplacementFor = targetKey;
       image.dataset.orenContentGrowthSlot = "left-top";
       image.classList.add("oren-content-growth-logistics-image");
@@ -264,7 +277,7 @@
       if (!isTargetImage) return;
 
       image.removeAttribute("srcset");
-      image.setAttribute("src", "./assets-optimized/content-growth-media-map-v1.webp?v=20260531-media-map-v1");
+      image.setAttribute("src", targetedImageMap[targetKey]);
       image.dataset.orenTargetedReplacementFor = targetKey;
       image.dataset.orenContentGrowthSlot = "left-bottom";
       image.classList.add("oren-content-growth-media-map-image");
@@ -317,7 +330,7 @@
       if (image.closest(".framer-f2dxcs-container")) return;
 
       image.removeAttribute("srcset");
-      image.setAttribute("src", "./assets-optimized/fitness-app-horizontal-clean-ordered.jpg?v=20260601-fitness-tour-v2");
+      image.setAttribute("src", targetedImageMap[targetKey]);
       image.dataset.orenTargetedReplacementFor = targetKey;
       image.classList.add("oren-tours-fitness-image");
 
@@ -342,7 +355,7 @@
       if (!isTargetImage) return;
 
       image.removeAttribute("srcset");
-      image.setAttribute("src", "./assets-optimized/fitness-app-horizontal-lianna-composite.jpg?v=20260601-fitness-tour-v5");
+      image.setAttribute("src", targetedImageMap[targetKey]);
       image.setAttribute("loading", "eager");
       image.setAttribute("decoding", "async");
       image.dataset.orenTargetedReplacementFor = targetKey;
@@ -960,6 +973,7 @@
     replaceToursDashboardCard(root);
     hideLeftFinishTourCard(root);
     collapseLegacyScreenies(root);
+    removeLegacyFramerImages(root);
     enhanceGalleries(root);
     injectOrenHero();
     injectGeneratedPortrait();
@@ -988,7 +1002,7 @@
     applyAll(document.body);
     keepWorkRouteOnHome();
     window.requestAnimationFrame(() => {
-      document.documentElement.dataset.editableMirror = "ready";
+      markOrenReady();
     });
 
     [0, 250, 1000, 2500].forEach((delay) => window.setTimeout(keepWorkRouteOnHome, delay));
@@ -998,7 +1012,8 @@
         if (mutation.type === "attributes" && mutation.target.nodeType === Node.ELEMENT_NODE) {
           const target = mutation.target;
           if (target.tagName === "IMG") replaceImages(target);
-          if (mutation.attributeName === "style") replaceFramerRemoteBackgrounds(target);
+          if (mutation.attributeName === "href") normalizeWorkLinks(target);
+          if (mutation.attributeName === "style") removeLegacyFramerBackgrounds(target);
         }
 
         mutation.addedNodes.forEach((node) => {
@@ -1010,7 +1025,7 @@
 
     observer.observe(document.body, {
       attributes: true,
-      attributeFilter: ["src", "srcset", "style"],
+      attributeFilter: ["src", "srcset", "style", "href"],
       childList: true,
       subtree: true,
     });

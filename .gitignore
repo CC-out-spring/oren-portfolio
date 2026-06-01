@@ -1,4 +1,7 @@
 .DS_Store
+node_modules/
+previews/
+assets/
 
 # Local debug screenshots and iteration exports kept out of GitHub Pages.
 /about-hover-*.png
@@ -11,4 +14,3 @@
 /tours-dashboard-*.png
 /ueg3-location-screenshot.png
 /work-hover-*.png
-

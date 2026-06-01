@@ -4,26 +4,56 @@
   const linkMap = config.links || {};
   const galleryMap = config.galleries || {};
   const defaultGallerySpreadSize = 3;
+  const framerImageMap = window.OREN_FRAMER_IMAGE_MAP || {};
   const imageMap = {
-    "JnX4DQ93dVEHzTFGkUsZLNV4.png": "./assets/oren-side-icon-stamp-v1.png",
-    "RYvnMMGEz4Ds3BGL5W1lRp9GOCU.png": "./assets/oren-side-icon-bowl-v1.png",
-    "zs8DG1Zf6J6s1d5yc00xHp98b60.png": "./assets/oren-side-icon-digital-v1.png",
-    "X8TlTAmfaqh8FaOYxjSjYMniaE.png": "./assets/oren-side-icon-sprig-v1.png",
-    "2LGPmWLUdShRmg0q79YvdcxivM.png": "./assets/oren-side-icon-sprig-v1.png",
-    "jvHISkS7qP9hkgBbgfRCAiPpjjI.png": "./assets/oren-side-icon-sprig-v1.png",
-    "J4bjhr8zDlxffN0kZnWBShva0GY.png": "./assets/oren-side-icon-night-v1.png",
-    "z0ha6Cap1xjkHBWyu1iV9tnWBNQ.png": "./assets/oren-side-icon-bowl-v1.png",
-    "uNzaxXZLk1aHsF3AXi7f4aGR0g.png": "./assets/oren-side-doodle-juicebox-v1.png",
-    "qe4YBLLmBViMAbL2fiphUNfdxA.png": "./assets/oren-side-doodle-orbit-bowl-v1.png",
-    "DUDVhZzaglA4vXZTKvTA6gePrU.png": "./assets/oren-side-doodle-househead-v1.png",
+    "JnX4DQ93dVEHzTFGkUsZLNV4.png": "./assets-optimized/oren-side-icon-stamp-v1.webp",
+    "RYvnMMGEz4Ds3BGL5W1lRp9GOCU.png": "./assets-optimized/oren-side-icon-bowl-v1.webp",
+    "zs8DG1Zf6J6s1d5yc00xHp98b60.png": "./assets-optimized/oren-side-icon-digital-v1.webp",
+    "X8TlTAmfaqh8FaOYxjSjYMniaE.png": "./assets-optimized/oren-side-icon-sprig-v1.webp",
+    "2LGPmWLUdShRmg0q79YvdcxivM.png": "./assets-optimized/oren-side-icon-sprig-v1.webp",
+    "jvHISkS7qP9hkgBbgfRCAiPpjjI.png": "./assets-optimized/oren-side-icon-sprig-v1.webp",
+    "J4bjhr8zDlxffN0kZnWBShva0GY.png": "./assets-optimized/oren-side-icon-night-v1.webp",
+    "z0ha6Cap1xjkHBWyu1iV9tnWBNQ.png": "./assets-optimized/oren-side-icon-bowl-v1.webp",
+    "uNzaxXZLk1aHsF3AXi7f4aGR0g.png": "./assets-optimized/oren-side-doodle-juicebox-v1.webp",
+    "qe4YBLLmBViMAbL2fiphUNfdxA.png": "./assets-optimized/oren-side-doodle-orbit-bowl-v1.webp",
+    "DUDVhZzaglA4vXZTKvTA6gePrU.png": "./assets-optimized/oren-side-doodle-househead-v1.webp",
     ...(config.images || {}),
   };
   let activeGallery = null;
   let activeGalleryIndex = 0;
+  let lastWorkNavigationAt = 0;
+  let workRouteGuardInstalled = false;
 
   function getGallerySpreadSize(gallery) {
     const size = Number(gallery && gallery.spreadSize) || defaultGallerySpreadSize;
     return Math.max(1, Math.min(size, defaultGallerySpreadSize));
+  }
+
+  function getImageKeyStem(key) {
+    const fileName = String(key || "").split("?")[0].split("/").pop() || "";
+    return fileName.replace(/\.[a-z0-9]+$/i, "");
+  }
+
+  function imageSourceMatchesKey(image, key) {
+    if (!image || !key) return false;
+
+    const stem = getImageKeyStem(key);
+    const values = [
+      image.getAttribute("src") || "",
+      image.getAttribute("srcset") || "",
+      image.dataset.editableImageKey || "",
+      image.dataset.orenTargetedReplacementFor || "",
+    ];
+
+    return values.some((value) => value.includes(key) || (stem && value.includes(stem)));
+  }
+
+  function getScopedImages(root) {
+    const scope = root || document;
+    return [
+      ...(scope.matches && scope.matches("img") ? [scope] : []),
+      ...(scope.querySelectorAll ? scope.querySelectorAll("img") : []),
+    ];
   }
 
   function replaceMeta() {
@@ -72,22 +102,21 @@
 
   function replaceImages(root) {
     const entries = Object.entries(imageMap).filter(([from]) => from);
-    if (!entries.length) return;
 
     (root || document).querySelectorAll("img").forEach((image) => {
       const src = image.getAttribute("src") || "";
       const srcset = image.getAttribute("srcset") || "";
 
       entries.forEach(([from, to]) => {
-        const isMatchedSource = src.includes(from) || srcset.includes(from);
+        const isMatchedSource = imageSourceMatchesKey(image, from);
 
-        if (src.includes(from)) {
+        if (isMatchedSource) {
           image.setAttribute("src", to);
           image.dataset.editableReplacedImage = "true";
           image.dataset.editableImageKey = from;
           if (galleryMap[from]) image.dataset.orenGalleryKey = from;
         }
-        if (srcset.includes(from)) {
+        if (srcset && isMatchedSource) {
           image.removeAttribute("srcset");
           image.setAttribute("src", to);
           image.dataset.editableReplacedImage = "true";
@@ -119,106 +148,130 @@
           if (card) card.classList.add("oren-ai-scene-card");
         }
       });
+
+      replaceFramerRemoteImage(image);
+    });
+
+    replaceFramerRemoteBackgrounds(root);
+  }
+
+  function getFramerImageKey(value) {
+    if (!value || !value.includes("framerusercontent.com/images/")) return "";
+
+    try {
+      const url = new URL(value.replace(/&amp;/g, "&"));
+      const fileName = url.pathname.split("/").pop() || "";
+      return url.search ? `${fileName}${url.search}` : fileName;
+    } catch (error) {
+      const match = value.match(/\/images\/([^"')\s,]+)/);
+      return match ? match[1].replace(/&amp;/g, "&") : "";
+    }
+  }
+
+  function getLocalFramerImage(value) {
+    const key = getFramerImageKey(value);
+    if (!key) return "";
+
+    const fileName = key.split("?")[0];
+    return framerImageMap[key] || framerImageMap[fileName] || "";
+  }
+
+  function replaceFramerRemoteImage(image) {
+    const src = image.getAttribute("src") || "";
+    const srcset = image.getAttribute("srcset") || "";
+    const localSrc = getLocalFramerImage(src) || getLocalFramerImage(srcset);
+
+    if (!localSrc) return;
+
+    image.removeAttribute("srcset");
+    image.setAttribute("src", localSrc);
+    image.dataset.orenFramerRemoteImage = "localized";
+  }
+
+  function replaceFramerRemoteBackgrounds(root) {
+    const scope = root || document;
+    const elements = [
+      ...(scope.matches && scope.matches("[style*='framerusercontent.com/images/']") ? [scope] : []),
+      ...(scope.querySelectorAll ? scope.querySelectorAll("[style*='framerusercontent.com/images/']") : []),
+    ];
+
+    elements.forEach((element) => {
+      const style = element.getAttribute("style") || "";
+      if (!style.includes("framerusercontent.com/images/")) return;
+
+      const nextStyle = style.replace(/https:\/\/framerusercontent\.com\/images\/[^"')\s,]+/g, (remoteUrl) => {
+        return getLocalFramerImage(remoteUrl) || remoteUrl;
+      });
+
+      if (nextStyle !== style) {
+        element.setAttribute("style", nextStyle);
+        element.dataset.orenFramerRemoteBackground = "localized";
+      }
     });
   }
 
   function replaceContentGrowthBashpayCard(root) {
-    const scope = root || document;
-    const cards = [
-      ...(scope.matches && scope.matches(".framer-1uw12gm-container") ? [scope] : []),
-      ...(scope.querySelectorAll ? scope.querySelectorAll(".framer-1uw12gm-container") : []),
-    ];
+    const targetKey = "aybhK1OWWsMUjIyA7Kj5iET0zE.png";
 
-    cards.forEach((card) => {
-      const image = card.querySelector("img");
-      if (!image) return;
-
-      const src = image.getAttribute("src") || "";
-      const srcset = image.getAttribute("srcset") || "";
-      const targetKey = "aybhK1OWWsMUjIyA7Kj5iET0zE.png";
-      const isTargetImage =
-        src.includes(targetKey) ||
-        srcset.includes(targetKey) ||
-        image.dataset.orenTargetedReplacementFor === targetKey;
+    getScopedImages(root).forEach((image) => {
+      const isTargetImage = imageSourceMatchesKey(image, targetKey);
 
       if (!isTargetImage) return;
 
       image.removeAttribute("srcset");
-      image.setAttribute("src", "./assets/xiaobai-dongwuyuan-content-growth-v1.png?v=20260530-bashpay-v1");
+      image.setAttribute("src", "./assets-optimized/xiaobai-dongwuyuan-content-growth-v1.jpg?v=20260530-bashpay-v1");
       image.dataset.orenTargetedReplacementFor = targetKey;
       image.classList.add("oren-content-growth-bashpay-image");
-      card.classList.add("oren-content-growth-bashpay-card");
 
-      const frame = image.closest("a");
+      const frame = image.closest("a") || image.parentElement;
       if (frame) frame.classList.add("oren-content-growth-bashpay-frame");
+
+      const card = frame?.parentElement || image.parentElement;
+      if (card) card.classList.add("oren-content-growth-bashpay-card");
     });
   }
 
   function replaceContentGrowthLogisticsCard(root) {
-    const scope = root || document;
-    const cards = [
-      ...(scope.matches && scope.matches(".framer-sspg62-container") ? [scope] : []),
-      ...(scope.closest && scope.closest(".framer-sspg62-container") ? [scope.closest(".framer-sspg62-container")] : []),
-      ...(scope.querySelectorAll ? scope.querySelectorAll(".framer-sspg62-container") : []),
-    ];
+    const targetKey = "6rBYKVmILDjUMitcTXjMZ0SPM.png";
 
-    [...new Set(cards)].forEach((card) => {
-      const image = card.querySelector("img");
-      if (!image) return;
-
-      const src = image.getAttribute("src") || "";
-      const srcset = image.getAttribute("srcset") || "";
-      const targetKey = "6rBYKVmILDjUMitcTXjMZ0SPM.png";
-      const isTargetImage =
-        src.includes(targetKey) ||
-        srcset.includes(targetKey) ||
-        image.dataset.orenTargetedReplacementFor === targetKey;
+    getScopedImages(root).forEach((image) => {
+      const isTargetImage = imageSourceMatchesKey(image, targetKey);
 
       if (!isTargetImage) return;
 
       image.removeAttribute("srcset");
-      image.setAttribute("src", "./assets/itg-real-estate-content-growth-v1.png?v=20260530-itg-v1");
+      image.setAttribute("src", "./assets-optimized/itg-real-estate-content-growth-v1.jpg?v=20260530-itg-v1");
       image.dataset.orenTargetedReplacementFor = targetKey;
       image.dataset.orenContentGrowthSlot = "left-top";
       image.classList.add("oren-content-growth-logistics-image");
-      card.classList.add("oren-content-growth-logistics-card");
 
-      const frame = image.closest("a");
+      const frame = image.closest("a") || image.parentElement;
       if (frame) frame.classList.add("oren-content-growth-logistics-frame");
+
+      const card = frame?.parentElement || image.parentElement;
+      if (card) card.classList.add("oren-content-growth-logistics-card");
     });
   }
 
   function replaceContentGrowthMediaMapCard(root) {
-    const scope = root || document;
-    const cards = [
-      ...(scope.matches && scope.matches(".framer-d0znxq-container") ? [scope] : []),
-      ...(scope.closest && scope.closest(".framer-d0znxq-container") ? [scope.closest(".framer-d0znxq-container")] : []),
-      ...(scope.querySelectorAll ? scope.querySelectorAll(".framer-d0znxq-container") : []),
-    ];
+    const targetKey = "QvIk4OtR2xbSpy213Cwtbyw6Q.png";
 
-    [...new Set(cards)].forEach((card) => {
-      const image = card.querySelector("img");
-      if (!image) return;
-
-      const src = image.getAttribute("src") || "";
-      const srcset = image.getAttribute("srcset") || "";
-      const targetKey = "QvIk4OtR2xbSpy213Cwtbyw6Q.png";
-      const isTargetImage =
-        src.includes(targetKey) ||
-        srcset.includes(targetKey) ||
-        image.dataset.orenTargetedReplacementFor === targetKey;
+    getScopedImages(root).forEach((image) => {
+      const isTargetImage = imageSourceMatchesKey(image, targetKey);
 
       if (!isTargetImage) return;
 
       image.removeAttribute("srcset");
-      image.setAttribute("src", "./assets/content-growth-media-map-v1.png?v=20260531-media-map-v1");
+      image.setAttribute("src", "./assets-optimized/content-growth-media-map-v1.webp?v=20260531-media-map-v1");
       image.dataset.orenTargetedReplacementFor = targetKey;
       image.dataset.orenContentGrowthSlot = "left-bottom";
       image.classList.add("oren-content-growth-media-map-image");
-      card.classList.add("oren-content-growth-media-map-card");
 
-      const frame = image.closest("a");
+      const frame = image.closest("a") || image.parentElement;
       if (frame) frame.classList.add("oren-content-growth-media-map-frame");
+
+      const card = frame?.parentElement || image.parentElement;
+      if (card) card.classList.add("oren-content-growth-media-map-card");
     });
   }
 
@@ -232,7 +285,7 @@
     images.forEach((image) => {
       const src = image.getAttribute("src") || "";
       const srcset = image.getAttribute("srcset") || "";
-      if (!src.includes("CjJRxESsZDM96KjX4zi3ntiSl7c.png") && !srcset.includes("CjJRxESsZDM96KjX4zi3ntiSl7c.png")) {
+      if (!imageSourceMatchesKey(image, "CjJRxESsZDM96KjX4zi3ntiSl7c.png")) {
         return;
       }
 
@@ -256,16 +309,13 @@
     images.forEach((image) => {
       const src = image.getAttribute("src") || "";
       const srcset = image.getAttribute("srcset") || "";
-      const isTargetImage =
-        src.includes(targetKey) ||
-        srcset.includes(targetKey) ||
-        image.dataset.orenTargetedReplacementFor === targetKey;
+      const isTargetImage = imageSourceMatchesKey(image, targetKey);
 
       if (!isTargetImage) return;
       if (image.closest(".framer-f2dxcs-container")) return;
 
       image.removeAttribute("srcset");
-      image.setAttribute("src", "./assets/fitness-app-horizontal-clean-ordered.png?v=20260601-fitness-tour-v2");
+      image.setAttribute("src", "./assets-optimized/fitness-app-horizontal-clean-ordered.jpg?v=20260601-fitness-tour-v2");
       image.dataset.orenTargetedReplacementFor = targetKey;
       image.classList.add("oren-tours-fitness-image");
 
@@ -285,15 +335,12 @@
     images.forEach((image) => {
       const src = image.getAttribute("src") || "";
       const srcset = image.getAttribute("srcset") || "";
-      const isTargetImage =
-        src.includes(targetKey) ||
-        srcset.includes(targetKey) ||
-        image.dataset.orenTargetedReplacementFor === targetKey;
+      const isTargetImage = imageSourceMatchesKey(image, targetKey);
 
       if (!isTargetImage) return;
 
       image.removeAttribute("srcset");
-      image.setAttribute("src", "./assets/fitness-app-horizontal-lianna-composite.png?v=20260601-fitness-tour-v5");
+      image.setAttribute("src", "./assets-optimized/fitness-app-horizontal-lianna-composite.jpg?v=20260601-fitness-tour-v5");
       image.setAttribute("loading", "eager");
       image.setAttribute("decoding", "async");
       image.dataset.orenTargetedReplacementFor = targetKey;
@@ -542,7 +589,7 @@
     copy.className = "oren-hero-copy";
     copy.innerHTML = `
       <div class="oren-signature-mark" aria-label="Oren" role="img">
-        <img class="oren-wordmark-img" src="./assets/oren-wordmark-v1.png?v=20260528-v1" alt="Oren" decoding="async" loading="eager">
+        <img class="oren-wordmark-img" src="./assets-optimized/oren-wordmark-v1.webp?v=20260528-v1" alt="Oren" decoding="async" loading="eager">
       </div>
       <div class="oren-welcome">
         Welcome to
@@ -567,7 +614,7 @@
     scene.className = "oren-portrait-scene";
     scene.innerHTML = `
       <div class="oren-head-stage" aria-hidden="true">
-        <img class="oren-portrait-full" src="./assets/oren-main-head-crayon-v1.png?v=20260601-crayon-v1" alt="" decoding="async" loading="eager">
+        <img class="oren-portrait-full" src="./assets-optimized/oren-main-head-crayon-v1.webp?v=20260601-crayon-v1" alt="" decoding="async" loading="eager">
       </div>
     `;
 
@@ -589,7 +636,7 @@
 
       signature.dataset.orenSignature = "true";
       signature.innerHTML = `
-        <img src="./assets/oren-wordmark-v1.png?v=20260528-v1" alt="Oren" style="display:block;width:100%;height:100%;object-fit:contain">
+        <img src="./assets-optimized/oren-wordmark-v1.webp?v=20260528-v1" alt="Oren" style="display:block;width:100%;height:100%;object-fit:contain">
       `;
     });
   }
@@ -624,24 +671,126 @@
     window.scrollTo({ top: window.innerHeight * 0.9, behavior: "smooth" });
   }
 
+  function isWorkHref(href) {
+    if (!href) return false;
+
+    const value = href.trim();
+    if (value === "#work") return true;
+
+    try {
+      const url = new URL(value, window.location.href);
+      const path = url.pathname.replace(/\/+$/, "");
+      return path.split("/").pop() === "work";
+    } catch (error) {
+      const normalized = value.replace(/[#?].*$/, "").replace(/\/+$/, "");
+      return normalized === "./work" || normalized === "/work" || normalized.endsWith("/work");
+    }
+  }
+
+  function getHomeUrlForWorkRoute(urlValue) {
+    const url = new URL(urlValue || window.location.href, window.location.href);
+    const nextPath = url.pathname.replace(/\/work\/?$/, "/");
+    return `${url.origin}${nextPath}${url.search}#work`;
+  }
+
   function isWorkNavLink(link) {
     if (!link || link.tagName !== "A") return false;
 
     const href = link.getAttribute("href") || "";
-    if (href === "#work" || href === "./work" || href === "/work" || href.endsWith("/work")) return true;
+    if (isWorkHref(href)) return true;
 
-    return link.getAttribute("data-framer-name") === "Work" && link.closest('[data-framer-name="Texts"]');
+    const label = (link.textContent || "").trim().replace(/\s+/g, " ").toLowerCase();
+    const framerName = (link.getAttribute("data-framer-name") || "").trim().toLowerCase();
+    const isTopNavItem = Boolean(link.closest('[data-framer-name="Texts"]'));
+    return isTopNavItem && (framerName === "work" || label === "work");
+  }
+
+  function getWorkNavigationElement(target) {
+    const element = target && (target.nodeType === Node.ELEMENT_NODE ? target : target.parentElement);
+    if (!element || !element.closest) return null;
+
+    const link = element.closest("a");
+    if (isWorkNavLink(link)) return link;
+
+    return element.closest('[data-framer-name="Texts"] [data-framer-name="Work"]');
+  }
+
+  function normalizeWorkLink(link) {
+    if (!isWorkNavLink(link)) return;
+
+    link.dataset.orenWorkNav = "true";
+    link.setAttribute("href", "#work");
+    link.removeAttribute("target");
+    link.setAttribute("aria-label", "Work, scroll down");
+  }
+
+  function normalizeWorkLinks(root) {
+    const scope = root || document;
+    const links = [
+      ...(scope.matches && scope.matches("a") ? [scope] : []),
+      ...(scope.querySelectorAll ? scope.querySelectorAll("a") : []),
+    ];
+
+    links.forEach(normalizeWorkLink);
+  }
+
+  function runWorkNavigation() {
+    const now = Date.now();
+    if (now - lastWorkNavigationAt < 260) return;
+
+    lastWorkNavigationAt = now;
+    normalizeWorkLinks(document);
+    window.requestAnimationFrame(scrollToWork);
   }
 
   function interceptWorkNavigation(event) {
-    const link = event.target && event.target.closest && event.target.closest("a");
-    if (!isWorkNavLink(link)) return;
+    const workElement = getWorkNavigationElement(event.target);
+    if (!workElement) return;
 
-    event.preventDefault();
+    if (event.cancelable) event.preventDefault();
     event.stopPropagation();
     event.stopImmediatePropagation();
-    link.setAttribute("href", "#work");
-    scrollToWork();
+    if (workElement.tagName === "A") normalizeWorkLink(workElement);
+    runWorkNavigation();
+  }
+
+  function keepWorkRouteOnHome() {
+    if (!isWorkHref(window.location.href)) return;
+
+    window.history.replaceState(window.history.state, document.title, getHomeUrlForWorkRoute(window.location.href));
+    window.requestAnimationFrame(scrollToWork);
+  }
+
+  function installWorkRouteGuard() {
+    if (workRouteGuardInstalled || !window.history) return;
+    workRouteGuardInstalled = true;
+
+    const wrapHistoryMethod = (methodName) => {
+      const original = window.history[methodName];
+      if (typeof original !== "function") return;
+
+      window.history[methodName] = function (state, title, url) {
+        if (url && isWorkHref(String(url))) {
+          const result = original.call(this, state, title, getHomeUrlForWorkRoute(url));
+          runWorkNavigation();
+          return result;
+        }
+
+        return original.apply(this, arguments);
+      };
+    };
+
+    wrapHistoryMethod("pushState");
+    wrapHistoryMethod("replaceState");
+    window.addEventListener("popstate", keepWorkRouteOnHome);
+  }
+
+  function bindWorkNavigationEvents() {
+    const options = { capture: true, passive: false };
+    ["touchstart", "touchend", "pointerdown", "pointerup", "mousedown", "mouseup", "click"].forEach((eventName) => {
+      window.addEventListener(eventName, interceptWorkNavigation, options);
+      document.addEventListener(eventName, interceptWorkNavigation, options);
+    });
   }
 
   function ensureNavTooltip(item, variant) {
@@ -713,7 +862,7 @@
     workItems.forEach((item) => {
       item.dataset.orenNavHint = "work";
       item.setAttribute("aria-label", "Work, scroll down");
-      if (item.tagName === "A") item.setAttribute("href", "#work");
+      if (item.tagName === "A") normalizeWorkLink(item);
 
       if (item.dataset.orenNavHoverBound !== "true") {
         item.dataset.orenNavHoverBound = "true";
@@ -803,6 +952,7 @@
     replaceMeta();
     replaceText(root);
     replaceLinks(root);
+    normalizeWorkLinks(root);
     replaceImages(root);
     replaceContentGrowthBashpayCard(root);
     replaceContentGrowthLogisticsCard(root);
@@ -830,10 +980,19 @@
   }
 
   function start() {
+    installWorkRouteGuard();
     lockMeta();
     applyAll(document.body);
+    keepWorkRouteOnHome();
     window.requestAnimationFrame(() => {
       document.documentElement.dataset.editableMirror = "ready";
+    });
+
+    [0, 250, 1000, 2500].forEach((delay) => {
+      window.setTimeout(() => {
+        normalizeWorkLinks(document);
+        keepWorkRouteOnHome();
+      }, delay);
     });
 
     const observer = new MutationObserver((mutations) => {
@@ -848,11 +1007,11 @@
     observer.observe(document.body, { childList: true, subtree: true });
   }
 
+  bindWorkNavigationEvents();
+
   if (document.readyState === "loading") {
-    document.addEventListener("click", interceptWorkNavigation, true);
     document.addEventListener("DOMContentLoaded", start, { once: true });
   } else {
-    document.addEventListener("click", interceptWorkNavigation, true);
     start();
   }
 })();

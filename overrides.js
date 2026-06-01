@@ -613,6 +613,37 @@
     return null;
   }
 
+  function scrollToWork() {
+    const target = getVisibleWorkTarget();
+    if (target) {
+      if (!target.id) target.id = "work";
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+
+    window.scrollTo({ top: window.innerHeight * 0.9, behavior: "smooth" });
+  }
+
+  function isWorkNavLink(link) {
+    if (!link || link.tagName !== "A") return false;
+
+    const href = link.getAttribute("href") || "";
+    if (href === "#work" || href === "./work" || href === "/work" || href.endsWith("/work")) return true;
+
+    return link.getAttribute("data-framer-name") === "Work" && link.closest('[data-framer-name="Texts"]');
+  }
+
+  function interceptWorkNavigation(event) {
+    const link = event.target && event.target.closest && event.target.closest("a");
+    if (!isWorkNavLink(link)) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    link.setAttribute("href", "#work");
+    scrollToWork();
+  }
+
   function ensureNavTooltip(item, variant) {
     if (item.querySelector(".oren-nav-tooltip")) return;
 
@@ -704,13 +735,7 @@
           event.preventDefault();
           event.stopPropagation();
           event.stopImmediatePropagation();
-          const target = getVisibleWorkTarget();
-          if (target) {
-            if (!target.id) target.id = "work";
-            target.scrollIntoView({ behavior: "smooth", block: "start" });
-          } else {
-            window.scrollTo({ top: window.innerHeight * 0.9, behavior: "smooth" });
-          }
+          scrollToWork();
         },
         true
       );
@@ -824,8 +849,10 @@
   }
 
   if (document.readyState === "loading") {
+    document.addEventListener("click", interceptWorkNavigation, true);
     document.addEventListener("DOMContentLoaded", start, { once: true });
   } else {
+    document.addEventListener("click", interceptWorkNavigation, true);
     start();
   }
 })();

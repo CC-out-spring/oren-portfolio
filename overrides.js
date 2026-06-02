@@ -144,14 +144,14 @@
         const isMatchedSource = imageSourceMatchesKey(image, from);
 
         if (isMatchedSource) {
-          image.setAttribute("src", to);
+          if (image.getAttribute("src") !== to) image.setAttribute("src", to);
           image.dataset.editableReplacedImage = "true";
           image.dataset.editableImageKey = from;
           if (galleryMap[from]) image.dataset.orenGalleryKey = from;
         }
         if (srcset && isMatchedSource) {
           image.removeAttribute("srcset");
-          image.setAttribute("src", to);
+          if (image.getAttribute("src") !== to) image.setAttribute("src", to);
           image.dataset.editableReplacedImage = "true";
           image.dataset.editableImageKey = from;
           if (galleryMap[from]) image.dataset.orenGalleryKey = from;
@@ -223,6 +223,11 @@
       element.style.setProperty("background-image", "none", "important");
       element.dataset.orenLegacyFramerBackground = "removed";
     });
+  }
+
+  function removeLegacyFramerImages(root) {
+    getScopedImages(root).forEach(removeLegacyFramerImage);
+    removeLegacyFramerBackgrounds(root);
   }
 
   function replaceContentGrowthBashpayCard(root) {
@@ -734,9 +739,11 @@
     if (!isWorkNavLink(link)) return;
 
     link.dataset.orenWorkNav = "true";
-    link.setAttribute("href", "#work");
-    link.removeAttribute("target");
-    link.setAttribute("aria-label", "Work, scroll down");
+    if (link.getAttribute("href") !== "#work") link.setAttribute("href", "#work");
+    if (link.hasAttribute("target")) link.removeAttribute("target");
+    if (link.getAttribute("aria-label") !== "Work, scroll down") {
+      link.setAttribute("aria-label", "Work, scroll down");
+    }
   }
 
   function normalizeWorkLinks(root) {

@@ -5,6 +5,7 @@
   const galleryMap = config.galleries || {};
   const defaultGallerySpreadSize = 3;
   const framerImageMap = window.OREN_FRAMER_IMAGE_MAP || {};
+  const contactEmail = "xuhaocheng.xmu@vip.163.com";
   const targetedImageMap = {
     "aybhK1OWWsMUjIyA7Kj5iET0zE.png": "./assets-optimized/xiaobai-dongwuyuan-content-growth-v1.jpg?v=20260530-bashpay-v1",
     "6rBYKVmILDjUMitcTXjMZ0SPM.png": "./assets-optimized/itg-real-estate-content-growth-v1.jpg?v=20260530-itg-v1",
@@ -843,9 +844,9 @@
     if (variant === "connect") {
       tooltip.innerHTML = `
         <span class="oren-contact-stack">
-          <span class="oren-contact-row oren-contact-row-email" data-copy-value="xuhaocheng.xmu@vip.163.com">
+          <span class="oren-contact-row oren-contact-row-email" data-copy-value="${contactEmail}">
             <span class="oren-email-icon" aria-hidden="true"></span>
-            <span class="oren-email-address">xuhaocheng.xmu@vip.163.com</span>
+            <span class="oren-email-address">${contactEmail}</span>
           </span>
           <span class="oren-contact-row oren-contact-row-wechat" data-copy-value="Spring_wall">
             <span class="oren-wechat-icon" aria-hidden="true">
@@ -972,7 +973,7 @@
       if (item.dataset.orenNavClickBound === "true") return;
       item.dataset.orenNavClickBound = "true";
       const openEmail = () => {
-        window.location.href = "mailto:xuhaocheng.xmu@vip.163.com";
+        window.location.href = `mailto:${contactEmail}`;
       };
       item.addEventListener("click", openEmail);
       item.addEventListener("keydown", (event) => {

@@ -13,7 +13,7 @@ window.JACKIE_EDITABLE_CONFIG = {
   links: {
     // Example:
     // "./work": "#work",
-    // "mailto:hello@example.com": "mailto:you@example.com",
+    // "./contact": "mailto:xuhaocheng.xmu@vip.163.com",
   },
 
   images: {

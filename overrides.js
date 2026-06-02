@@ -91,6 +91,11 @@
     ];
   }
 
+  function setImageSource(image, src) {
+    if (image.hasAttribute("srcset")) image.removeAttribute("srcset");
+    if (image.getAttribute("src") !== src) image.setAttribute("src", src);
+  }
+
   function replaceMeta() {
     if (config.meta && config.meta.title) {
       document.title = config.meta.title;
@@ -148,14 +153,13 @@
         const isMatchedSource = imageSourceMatchesKey(image, from);
 
         if (isMatchedSource) {
-          if (image.getAttribute("src") !== to) image.setAttribute("src", to);
+          setImageSource(image, to);
           image.dataset.editableReplacedImage = "true";
           image.dataset.editableImageKey = from;
           if (galleryMap[from]) image.dataset.orenGalleryKey = from;
         }
         if (srcset && isMatchedSource) {
-          image.removeAttribute("srcset");
-          if (image.getAttribute("src") !== to) image.setAttribute("src", to);
+          setImageSource(image, to);
           image.dataset.editableReplacedImage = "true";
           image.dataset.editableImageKey = from;
           if (galleryMap[from]) image.dataset.orenGalleryKey = from;
@@ -220,8 +224,7 @@
 
     if (!localSrc) return;
 
-    image.removeAttribute("srcset");
-    image.setAttribute("src", localSrc);
+    setImageSource(image, localSrc);
     image.dataset.orenFramerRemoteImage = "localized";
   }
 
@@ -255,8 +258,7 @@
 
       if (!isTargetImage) return;
 
-      image.removeAttribute("srcset");
-      image.setAttribute("src", targetedImageMap[targetKey]);
+      setImageSource(image, targetedImageMap[targetKey]);
       image.dataset.orenTargetedReplacementFor = targetKey;
       image.classList.add("oren-content-growth-bashpay-image");
 
@@ -276,8 +278,7 @@
 
       if (!isTargetImage) return;
 
-      image.removeAttribute("srcset");
-      image.setAttribute("src", targetedImageMap[targetKey]);
+      setImageSource(image, targetedImageMap[targetKey]);
       image.dataset.orenTargetedReplacementFor = targetKey;
       image.dataset.orenContentGrowthSlot = "left-top";
       image.classList.add("oren-content-growth-logistics-image");
@@ -298,8 +299,7 @@
 
       if (!isTargetImage) return;
 
-      image.removeAttribute("srcset");
-      image.setAttribute("src", targetedImageMap[targetKey]);
+      setImageSource(image, targetedImageMap[targetKey]);
       image.dataset.orenTargetedReplacementFor = targetKey;
       image.dataset.orenContentGrowthSlot = "left-bottom";
       image.classList.add("oren-content-growth-media-map-image");
@@ -351,8 +351,7 @@
       if (!isTargetImage) return;
       if (image.closest(".framer-f2dxcs-container")) return;
 
-      image.removeAttribute("srcset");
-      image.setAttribute("src", targetedImageMap[targetKey]);
+      setImageSource(image, targetedImageMap[targetKey]);
       image.dataset.orenTargetedReplacementFor = targetKey;
       image.classList.add("oren-tours-fitness-image");
 
@@ -376,8 +375,7 @@
 
       if (!isTargetImage) return;
 
-      image.removeAttribute("srcset");
-      image.setAttribute("src", targetedImageMap[targetKey]);
+      setImageSource(image, targetedImageMap[targetKey]);
       image.setAttribute("loading", "eager");
       image.setAttribute("decoding", "async");
       image.dataset.orenTargetedReplacementFor = targetKey;
@@ -985,10 +983,7 @@
     });
   }
 
-  function applyAll(root) {
-    replaceMeta();
-    replaceText(root);
-    replaceLinks(root);
+  function replaceVisualAssets(root) {
     replaceImages(root);
     replaceContentGrowthBashpayCard(root);
     replaceContentGrowthLogisticsCard(root);
@@ -996,8 +991,15 @@
     replaceToursHeroImage(root);
     replaceToursDashboardCard(root);
     hideLeftFinishTourCard(root);
-    collapseLegacyScreenies(root);
     enhanceGalleries(root);
+  }
+
+  function applyAll(root) {
+    replaceMeta();
+    replaceText(root);
+    replaceLinks(root);
+    replaceVisualAssets(root);
+    collapseLegacyScreenies(root);
     injectOrenHero();
     injectGeneratedPortrait();
     injectOrenDoodles();
@@ -1034,7 +1036,7 @@
       mutations.forEach((mutation) => {
         if (mutation.type === "attributes" && mutation.target.nodeType === Node.ELEMENT_NODE) {
           const target = mutation.target;
-          if (target.tagName === "IMG") replaceImages(target);
+          if (target.tagName === "IMG") replaceVisualAssets(target);
           if (mutation.attributeName === "href") normalizeWorkLinks(target);
           if (mutation.attributeName === "style") replaceFramerRemoteBackgrounds(target);
         }

@@ -4,8 +4,7 @@
   const linkMap = config.links || {};
   const galleryMap = config.galleries || {};
   const defaultGallerySpreadSize = 3;
-  const blankAsset = "./assets-optimized/blank.svg";
-  const legacyFramerImageNeedle = "framerusercontent.com/images/";
+  const framerImageMap = window.OREN_FRAMER_IMAGE_MAP || {};
   const targetedImageMap = {
     "aybhK1OWWsMUjIyA7Kj5iET0zE.png": "./assets-optimized/xiaobai-dongwuyuan-content-growth-v1.jpg?v=20260530-bashpay-v1",
     "6rBYKVmILDjUMitcTXjMZ0SPM.png": "./assets-optimized/itg-real-estate-content-growth-v1.jpg?v=20260530-itg-v1",
@@ -64,7 +63,13 @@
     if (!image || !key) return false;
 
     const stem = getImageKeyStem(key);
-    const configuredTarget = imageMap[key] || targetedImageMap[key] || "";
+    const fileName = String(key || "").split("?")[0];
+    const configuredTargets = [
+      imageMap[key],
+      targetedImageMap[key],
+      framerImageMap[key],
+      framerImageMap[fileName],
+    ].filter(Boolean);
     const values = [
       image.getAttribute("src") || "",
       image.getAttribute("srcset") || "",
@@ -74,8 +79,7 @@
 
     return values.some((value) => {
       if (value.includes(key) || (stem && value.includes(stem))) return true;
-      if (!configuredTarget) return false;
-      return normalizeAssetPath(value).includes(normalizeAssetPath(configuredTarget));
+      return configuredTargets.some((target) => normalizeAssetPath(value).includes(normalizeAssetPath(target)));
     });
   }
 
@@ -134,7 +138,7 @@
   }
 
   function replaceImages(root) {
-    const entries = Object.entries({ ...targetedImageMap, ...imageMap }).filter(([from]) => from);
+    const entries = Object.entries(imageMap).filter(([from]) => from);
 
     (root || document).querySelectorAll("img").forEach((image) => {
       const src = image.getAttribute("src") || "";
@@ -182,37 +186,46 @@
         }
       });
 
-      removeLegacyFramerImage(image);
+      replaceFramerRemoteImage(image);
     });
 
-    removeLegacyFramerBackgrounds(root);
+    replaceFramerRemoteBackgrounds(root);
   }
 
-  function hasLegacyFramerImage(value) {
-    return String(value || "").includes(legacyFramerImageNeedle);
-  }
+  function getFramerImageKey(value) {
+    if (!value || !value.includes("framerusercontent.com/images/")) return "";
 
-  function removeLegacyFramerImage(image) {
-    const src = image.getAttribute("src") || "";
-    const srcset = image.getAttribute("srcset") || "";
-    if (!hasLegacyFramerImage(src) && !hasLegacyFramerImage(srcset)) return;
-
-    const wrapper = image.closest("[data-framer-background-image-wrapper]");
-    const named = image.closest("[data-framer-name]");
-    const keepAsBlank = named && /favicon|icon/i.test(named.getAttribute("data-framer-name") || "");
-
-    image.removeAttribute("srcset");
-    image.setAttribute("src", blankAsset);
-    image.dataset.orenLegacyFramerImage = "removed";
-    image.setAttribute("aria-hidden", "true");
-
-    if (!keepAsBlank) {
-      image.style.setProperty("opacity", "0", "important");
-      if (wrapper) wrapper.dataset.orenLegacyFramerImage = "removed";
+    try {
+      const url = new URL(value.replace(/&amp;/g, "&"));
+      const fileName = url.pathname.split("/").pop() || "";
+      return url.search ? `${fileName}${url.search}` : fileName;
+    } catch (error) {
+      const match = value.match(/\/images\/([^"')\s,]+)/);
+      return match ? match[1].replace(/&amp;/g, "&") : "";
     }
   }
 
-  function removeLegacyFramerBackgrounds(root) {
+  function getLocalFramerImage(value) {
+    const key = getFramerImageKey(value);
+    if (!key) return "";
+
+    const fileName = key.split("?")[0];
+    return framerImageMap[key] || framerImageMap[fileName] || "";
+  }
+
+  function replaceFramerRemoteImage(image) {
+    const src = image.getAttribute("src") || "";
+    const srcset = image.getAttribute("srcset") || "";
+    const localSrc = getLocalFramerImage(src) || getLocalFramerImage(srcset);
+
+    if (!localSrc) return;
+
+    image.removeAttribute("srcset");
+    image.setAttribute("src", localSrc);
+    image.dataset.orenFramerRemoteImage = "localized";
+  }
+
+  function replaceFramerRemoteBackgrounds(root) {
     const scope = root || document;
     const elements = [
       ...(scope.matches && scope.matches("[style*='framerusercontent.com/images/']") ? [scope] : []),
@@ -220,14 +233,18 @@
     ];
 
     elements.forEach((element) => {
-      element.style.setProperty("background-image", "none", "important");
-      element.dataset.orenLegacyFramerBackground = "removed";
-    });
-  }
+      const style = element.getAttribute("style") || "";
+      if (!style.includes("framerusercontent.com/images/")) return;
 
-  function removeLegacyFramerImages(root) {
-    getScopedImages(root).forEach(removeLegacyFramerImage);
-    removeLegacyFramerBackgrounds(root);
+      const nextStyle = style.replace(/https:\/\/framerusercontent\.com\/images\/[^"')\s,]+/g, (remoteUrl) => {
+        return getLocalFramerImage(remoteUrl) || remoteUrl;
+      });
+
+      if (nextStyle !== style) {
+        element.setAttribute("style", nextStyle);
+        element.dataset.orenFramerRemoteBackground = "localized";
+      }
+    });
   }
 
   function replaceContentGrowthBashpayCard(root) {
@@ -980,7 +997,6 @@
     replaceToursDashboardCard(root);
     hideLeftFinishTourCard(root);
     collapseLegacyScreenies(root);
-    removeLegacyFramerImages(root);
     enhanceGalleries(root);
     injectOrenHero();
     injectGeneratedPortrait();
@@ -1020,7 +1036,7 @@
           const target = mutation.target;
           if (target.tagName === "IMG") replaceImages(target);
           if (mutation.attributeName === "href") normalizeWorkLinks(target);
-          if (mutation.attributeName === "style") removeLegacyFramerBackgrounds(target);
+          if (mutation.attributeName === "style") replaceFramerRemoteBackgrounds(target);
         }
 
         mutation.addedNodes.forEach((node) => {

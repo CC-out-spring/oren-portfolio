@@ -6,12 +6,288 @@
   const defaultGallerySpreadSize = 3;
   const framerImageMap = window.OREN_FRAMER_IMAGE_MAP || {};
   const contactEmail = "xuhaocheng.xmu@vip.163.com";
+  const aiColorMatchOriginalKey = "afys4KtZC007XBhmTWURY9KL4.png";
+  const aiColorMatchDesktopReplacement = "./assets-optimized/evoto-folded-stack-reference.png?v=20260831-evoto-reference-v1";
+  const aiColorMatchPreviewItems = [
+    {
+      src: "./assets-optimized/evoto-preview/01-home.webp?v=20260831-evoto-preview-v1",
+      category: "Home",
+      title: "功能入口与项目素材管理",
+    },
+    {
+      src: "./assets-optimized/evoto-preview/02-color-match-edit.webp?v=20260831-evoto-preview-v1",
+      category: "AI Color Match",
+      title: "资产页",
+    },
+    {
+      src: "./assets-optimized/evoto-preview/03-color-match-recommend.webp?v=20260831-evoto-preview-v1",
+      category: "AI Color Match",
+      title: "推荐色彩方案",
+    },
+    {
+      src: "./assets-optimized/evoto-preview/04-color-match-global.webp?v=20260831-evoto-preview-v1",
+      category: "AI Color Match",
+      title: "Global / Subject / Background 分区控制",
+    },
+    {
+      src: "./assets-optimized/evoto-preview/05-color-match-subject-select.webp?v=20260831-evoto-preview-v1",
+      category: "AI Color Match",
+      title: "主体选择与遮罩预览",
+    },
+    {
+      src: "./assets-optimized/evoto-preview/06-color-match-subject.webp?v=20260831-evoto-preview-v1",
+      category: "AI Color Match",
+      title: "Subject 主体调色",
+    },
+    {
+      src: "./assets-optimized/evoto-preview/07-color-match-background.webp?v=20260831-evoto-preview-v1",
+      category: "AI Color Match",
+      title: "Background 背景调色",
+    },
+    {
+      src: "./assets-optimized/evoto-preview/08-ai-lab-slow-shutter.webp?v=20260831-evoto-preview-v1",
+      category: "AI Lab / Slow Shutter",
+      title: "慢门特效生成",
+    },
+    {
+      src: "./assets-optimized/evoto-preview/09-ai-relight-face.webp?v=20260831-evoto-preview-v1",
+      category: "AI Relight",
+      title: "人像补光预设",
+    },
+    {
+      src: "./assets-optimized/evoto-preview/10-ai-relight-tools.webp?v=20260831-evoto-preview-v1",
+      category: "AI Relight",
+      title: "光效参数与局部控制",
+    },
+    {
+      src: "./assets-optimized/evoto-preview/11-ai-relight-generate.webp?v=20260831-evoto-preview-v1",
+      category: "AI Relight",
+      title: "生成与结果对比",
+    },
+    {
+      src: "./assets-optimized/evoto-preview/12-collage.webp?v=20260831-evoto-preview-v1",
+      category: "Collage",
+      title: "拼贴模板与素材组合",
+    },
+    {
+      src: "./assets-optimized/evoto-preview/13-settings-about.webp?v=20260831-evoto-preview-v1",
+      category: "Settings",
+      title: "产品信息与账号设置",
+    },
+    {
+      src: "./assets-optimized/evoto-preview/14-feedback-request.webp?v=20260831-evoto-preview-v1",
+      category: "Feedback",
+      title: "功能需求反馈入口",
+    },
+    {
+      src: "./assets-optimized/evoto-preview/15-feedback-provide.webp?v=20260831-evoto-preview-v1",
+      category: "Feedback",
+      title: "用户反馈提交流程",
+    },
+  ];
+  const aiColorMatchPreviewGallery = {
+    title: "Evoto AI Color Match",
+    variant: "evoto-gallery",
+    spreadSize: 1,
+    images: aiColorMatchPreviewItems.map((item) => item.src),
+    items: aiColorMatchPreviewItems,
+  };
+  const pixverseOriginalKey = "UeG3qBVgjLwvwcGSGQLZM9AI.png";
+  const pixverseDesktopReplacement = "./assets-optimized/pixverse-stack-reference.png?v=20260831-pixverse-reference-v1";
+  const pixversePreviewItems = [
+    {
+      src: "./assets-optimized/pixverse-preview/01-home.webp?v=20260831-pixverse-preview-v1",
+      category: "Web",
+      title: "首页与 PixLight 活动入口",
+    },
+    {
+      src: "./assets-optimized/pixverse-preview/02-agent.webp?v=20260831-pixverse-preview-v1",
+      category: "Agent",
+      title: "Agent 创作工作台",
+    },
+    {
+      src: "./assets-optimized/pixverse-preview/03-model.webp?v=20260831-pixverse-preview-v1",
+      category: "Model",
+      title: "模型选择与能力层级",
+    },
+    {
+      src: "./assets-optimized/pixverse-preview/04-app-home.webp?v=20260831-pixverse-preview-v1",
+      category: "App",
+      title: "移动端创作首页",
+    },
+    {
+      src: "./assets-optimized/pixverse-preview/05-lip-sync.webp?v=20260831-pixverse-preview-v1",
+      category: "Lip Sync",
+      title: "角色口型同步能力",
+    },
+    {
+      src: "./assets-optimized/pixverse-preview/06-sound-effect.webp?v=20260831-pixverse-preview-v1",
+      category: "Sound Effect",
+      title: "音效生成能力封装",
+    },
+    {
+      src: "./assets-optimized/pixverse-preview/07-mini-apps.webp?v=20260831-pixverse-preview-v1",
+      category: "Mini-Apps",
+      title: "AI 工具矩阵",
+    },
+    {
+      src: "./assets-optimized/pixverse-preview/08-mini-apps-tools.webp?v=20260831-pixverse-preview-v1",
+      category: "Mini-Apps",
+      title: "工具详情与入口组织",
+    },
+    {
+      src: "./assets-optimized/pixverse-preview/09-skill-gallery.webp?v=20260831-pixverse-preview-v1",
+      category: "Skill Gallery",
+      title: "技能模板与案例展示",
+    },
+  ];
+  const pixversePreviewGallery = {
+    title: "PixVerse Product Work",
+    variant: "pixverse-gallery",
+    spreadSize: 1,
+    images: pixversePreviewItems.map((item) => item.src),
+    items: pixversePreviewItems,
+  };
+  const liannaDashboardOriginalKey = "jkezJCVWvw8W2KInfhlRWQOlS4.png";
+  const liannaDashboardReplacement = "./assets-optimized/lianna-stack-reference.png?v=20260901-lianna-reference-v1";
+  const liannaPreviewItems = [
+    {
+      src: "./assets-optimized/lianna-preview/01-home-training.webp?v=20260901-lianna-preview-v1",
+      category: "今日训练",
+      title: "上肢推力训练入口",
+    },
+    {
+      src: "./assets-optimized/lianna-preview/02-training-archive.webp?v=20260901-lianna-preview-v1",
+      category: "我的训练",
+      title: "训练档案与热度追踪",
+    },
+    {
+      src: "./assets-optimized/lianna-preview/03-body-muscle.webp?v=20260901-lianna-preview-v1",
+      category: "身体状态",
+      title: "肌肉状态与恢复评分",
+    },
+    {
+      src: "./assets-optimized/lianna-preview/04-fatigue-trend.webp?v=20260901-lianna-preview-v1",
+      category: "身体状态",
+      title: "疲劳趋势与薄弱肌群",
+    },
+    {
+      src: "./assets-optimized/lianna-preview/05-active-training.webp?v=20260901-lianna-preview-v1",
+      category: "本次训练",
+      title: "动作执行与组数记录",
+    },
+    {
+      src: "./assets-optimized/lianna-preview/06-ai-coach-home.webp?v=20260901-lianna-preview-v1",
+      category: "AI 教练",
+      title: "训练对话入口",
+    },
+    {
+      src: "./assets-optimized/lianna-preview/07-training-plan-detail.webp?v=20260901-lianna-preview-v1",
+      category: "训练计划",
+      title: "全身基础计划详情",
+    },
+    {
+      src: "./assets-optimized/lianna-preview/08-action-library.webp?v=20260901-lianna-preview-v1",
+      category: "动作库",
+      title: "筛选与动作速查",
+    },
+    {
+      src: "./assets-optimized/lianna-preview/09-ai-recovery.webp?v=20260901-lianna-preview-v1",
+      category: "AI 教练",
+      title: "恢复建议对话",
+    },
+    {
+      src: "./assets-optimized/lianna-preview/10-ai-history.webp?v=20260901-lianna-preview-v1",
+      category: "AI 教练",
+      title: "历史对话管理",
+    },
+    {
+      src: "./assets-optimized/lianna-preview/11-plan-list.webp?v=20260901-lianna-preview-v1",
+      category: "训练计划",
+      title: "计划列表与动作安排",
+    },
+  ];
+  const liannaPreviewGallery = {
+    title: "AI Fitness Coach App 一练哪",
+    variant: "lianna-gallery",
+    spreadSize: 1,
+    images: liannaPreviewItems.map((item) => item.src),
+    items: liannaPreviewItems,
+  };
+  const kaitouOriginalKey = "x3y7QRdmiIS5JFAwhWC4IHHHJsE.png";
+  const kaitouDesktopReplacement = "./assets-optimized/kaitou-stack-reference.png?v=20260901-kaitou-reference-v1";
+  const kaitouPreviewItems = [
+    {
+      src: "./assets-optimized/kaitou-preview/01-filter-entry.png?v=20260901-kaitou-preview-v1",
+      category: "候选筛选",
+      title: "插件入口与筛选工作台",
+    },
+    {
+      src: "./assets-optimized/kaitou-preview/02-industry-work-filter.png?v=20260901-kaitou-preview-v1",
+      category: "候选筛选",
+      title: "行业与工作性质筛选",
+    },
+    {
+      src: "./assets-optimized/kaitou-preview/03-work-salary-filter.png?v=20260901-kaitou-preview-v1",
+      category: "候选筛选",
+      title: "工作经验与薪资条件",
+    },
+    {
+      src: "./assets-optimized/kaitou-preview/04-experience-education-filter.png?v=20260901-kaitou-preview-v1",
+      category: "候选筛选",
+      title: "经验学历与公司画像",
+    },
+    {
+      src: "./assets-optimized/kaitou-preview/05-resume-city-role-filter.png?v=20260901-kaitou-preview-v1",
+      category: "投递条件",
+      title: "简历城市职位行业配置",
+    },
+    {
+      src: "./assets-optimized/kaitou-preview/06-candidate-results-greeting.png?v=20260901-kaitou-preview-v1",
+      category: "候选结果",
+      title: "岗位列表与自定义招呼语",
+    },
+    {
+      src: "./assets-optimized/kaitou-preview/07-delivery-config.png?v=20260901-kaitou-preview-v1",
+      category: "投递配置",
+      title: "岗位选择与简历设置",
+    },
+    {
+      src: "./assets-optimized/kaitou-preview/08-ai-settings.png?v=20260901-kaitou-preview-v1",
+      category: "系统设置",
+      title: "简历图片与 AI 配置",
+    },
+  ];
+  const kaitouPreviewGallery = {
+    title: "开投 候选筛选与沟通助手",
+    variant: "kaitou-gallery",
+    spreadSize: 1,
+    images: kaitouPreviewItems.map((item) => item.src),
+    items: kaitouPreviewItems,
+  };
   const targetedImageMap = {
     "aybhK1OWWsMUjIyA7Kj5iET0zE.png": "./assets-optimized/xiaobai-dongwuyuan-content-growth-v1.jpg?v=20260530-bashpay-v1",
     "6rBYKVmILDjUMitcTXjMZ0SPM.png": "./assets-optimized/itg-real-estate-content-growth-v1.jpg?v=20260530-itg-v1",
     "QvIk4OtR2xbSpy213Cwtbyw6Q.png": "./assets-optimized/content-growth-media-map-v1.webp?v=20260531-media-map-v1",
     "CjJRxESsZDM96KjX4zi3ntiSl7c.png": "./assets-optimized/fitness-app-horizontal-clean-ordered.jpg?v=20260601-fitness-tour-v2",
     "jkezJCVWvw8W2KInfhlRWQOlS4.png": "./assets-optimized/fitness-app-horizontal-lianna-composite.jpg?v=20260601-fitness-tour-v5",
+  };
+  const contentPreviewMap = {
+    "aybhK1OWWsMUjIyA7Kj5iET0zE.png": {
+      title: "小白洞物园公众号产出",
+      subtitle: "内容策划与公众号运营",
+      images: [targetedImageMap["aybhK1OWWsMUjIyA7Kj5iET0zE.png"]],
+    },
+    "6rBYKVmILDjUMitcTXjMZ0SPM.png": {
+      title: "国贸地产品牌外宣产出",
+      subtitle: "品牌传播与内容增长",
+      images: [targetedImageMap["6rBYKVmILDjUMitcTXjMZ0SPM.png"]],
+    },
+    "QvIk4OtR2xbSpy213Cwtbyw6Q.png": {
+      title: "AIGC 热点内容产出",
+      subtitle: "AI 辅助内容运营",
+      images: [targetedImageMap["QvIk4OtR2xbSpy213Cwtbyw6Q.png"]],
+    },
   };
   const imageMap = {
     "JnX4DQ93dVEHzTFGkUsZLNV4.png": "./assets-optimized/oren-side-icon-stamp-v1.webp",
@@ -95,6 +371,127 @@
   function setImageSource(image, src) {
     if (image.hasAttribute("srcset")) image.removeAttribute("srcset");
     if (image.getAttribute("src") !== src) image.setAttribute("src", src);
+  }
+
+  function isDesktopViewport() {
+    return window.matchMedia("(min-width: 950px)").matches;
+  }
+
+  function replaceAiColorMatchCard(root) {
+    if (!isDesktopViewport()) return;
+
+    getScopedImages(root).forEach((image) => {
+      if (!imageSourceMatchesKey(image, aiColorMatchOriginalKey)) return;
+
+      const frame = image.closest("a");
+      const card = frame && frame.parentElement;
+      const section = image.closest('[data-framer-name="Sofware should empower"]');
+      if (!frame || !card || !card.classList.contains("framer-5up9eb-container") || !section) return;
+
+      setImageSource(image, aiColorMatchDesktopReplacement);
+      image.dataset.editableReplacedImage = "true";
+      image.dataset.editableImageKey = aiColorMatchOriginalKey;
+      image.dataset.orenAiColorMatchReplacement = "evoto-folded-stack-reference-v1";
+      image.classList.add("oren-ai-color-match-image");
+      frame.classList.add("oren-ai-color-match-frame");
+      card.classList.add("oren-ai-color-match-card");
+
+      if (frame.dataset.orenAiColorMatchPreviewBound !== "true") {
+        frame.dataset.orenAiColorMatchPreviewBound = "true";
+        frame.classList.add("oren-ai-color-match-preview-trigger", "oren-gallery-trigger");
+        frame.setAttribute("role", "button");
+        frame.setAttribute("tabindex", "0");
+        frame.setAttribute("aria-label", "Preview Evoto AI Color Match");
+        frame.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          openGallery(aiColorMatchPreviewGallery, 0);
+        });
+        frame.addEventListener("keydown", (event) => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          openGallery(aiColorMatchPreviewGallery, 0);
+        });
+      }
+    });
+  }
+
+  function replacePixverseCard(root) {
+    if (!isDesktopViewport()) return;
+
+    getScopedImages(root).forEach((image) => {
+      if (!imageSourceMatchesKey(image, pixverseOriginalKey)) return;
+
+      const frame = image.closest("a");
+      const card = frame && frame.parentElement;
+      const section = image.closest('[data-framer-name="Sofware should empower"]');
+      if (!frame || !card || !card.classList.contains("framer-19ccunn-container") || !section) return;
+
+      setImageSource(image, pixverseDesktopReplacement);
+      image.dataset.editableReplacedImage = "true";
+      image.dataset.editableImageKey = pixverseOriginalKey;
+      image.dataset.orenPixverseReplacement = "pixverse-stack-reference-v1";
+      image.classList.add("oren-ai-scene-image", "oren-pixverse-image");
+      frame.classList.add("oren-ai-scene-frame", "oren-pixverse-frame", "oren-pixverse-preview-trigger", "oren-gallery-trigger");
+      card.classList.add("oren-ai-scene-card", "oren-pixverse-card");
+
+      if (frame.dataset.orenPixversePreviewBound !== "true") {
+        frame.dataset.orenPixversePreviewBound = "true";
+        frame.setAttribute("role", "button");
+        frame.setAttribute("tabindex", "0");
+        frame.setAttribute("aria-label", "Preview PixVerse product work");
+        frame.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          openGallery(pixversePreviewGallery, 0);
+        });
+        frame.addEventListener("keydown", (event) => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          openGallery(pixversePreviewGallery, 0);
+        });
+      }
+    });
+  }
+
+  function replaceKaitouCard(root) {
+    if (!isDesktopViewport()) return;
+
+    getScopedImages(root).forEach((image) => {
+      if (!imageSourceMatchesKey(image, kaitouOriginalKey)) return;
+
+      const frame = image.closest("a");
+      const card = frame && frame.parentElement;
+      const section = image.closest('[data-framer-name="Sofware should empower"]');
+      if (!frame || !card || !card.classList.contains("framer-2f5va1-container") || !section) return;
+
+      setImageSource(image, kaitouDesktopReplacement);
+      image.setAttribute("loading", "eager");
+      image.setAttribute("decoding", "async");
+      image.dataset.editableReplacedImage = "true";
+      image.dataset.editableImageKey = kaitouOriginalKey;
+      image.dataset.orenKaitouReplacement = "kaitou-stack-reference-v1";
+      image.classList.add("oren-ai-lab-poster-image", "oren-kaitou-image");
+      frame.classList.add("oren-ai-lab-poster-frame", "oren-kaitou-frame", "oren-kaitou-preview-trigger", "oren-gallery-trigger");
+      card.classList.add("oren-ai-lab-poster-card", "oren-kaitou-card");
+
+      if (frame.dataset.orenKaitouPreviewBound !== "true") {
+        frame.dataset.orenKaitouPreviewBound = "true";
+        frame.setAttribute("role", "button");
+        frame.setAttribute("tabindex", "0");
+        frame.setAttribute("aria-label", "Preview Kaitou product work");
+        frame.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          openGallery(kaitouPreviewGallery, 0);
+        });
+        frame.addEventListener("keydown", (event) => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          openGallery(kaitouPreviewGallery, 0);
+        });
+      }
+    });
   }
 
   function replaceMeta() {
@@ -189,6 +586,7 @@
           const card = frame && frame.parentElement;
           if (card) card.classList.add("oren-ai-scene-card");
         }
+
       });
 
       replaceFramerRemoteImage(image);
@@ -367,7 +765,7 @@
       ...(scope.matches && scope.matches("img") ? [scope] : []),
       ...(scope.querySelectorAll ? scope.querySelectorAll("img") : []),
     ];
-    const targetKey = "jkezJCVWvw8W2KInfhlRWQOlS4.png";
+    const targetKey = liannaDashboardOriginalKey;
 
     images.forEach((image) => {
       const src = image.getAttribute("src") || "";
@@ -376,14 +774,33 @@
 
       if (!isTargetImage) return;
 
-      setImageSource(image, targetedImageMap[targetKey]);
+      setImageSource(image, liannaDashboardReplacement);
       image.setAttribute("loading", "eager");
       image.setAttribute("decoding", "async");
       image.dataset.orenTargetedReplacementFor = targetKey;
+      image.dataset.orenLiannaReplacement = "lianna-stack-reference-v1";
       image.classList.add("oren-tours-dashboard-image");
 
       const frame = image.closest("a") || image.parentElement;
-      if (frame) frame.classList.add("oren-tours-dashboard-frame");
+      if (frame) {
+        frame.classList.add("oren-tours-dashboard-frame", "oren-lianna-preview-trigger", "oren-gallery-trigger");
+        if (frame.dataset.orenLiannaPreviewBound !== "true") {
+          frame.dataset.orenLiannaPreviewBound = "true";
+          frame.setAttribute("role", "button");
+          frame.setAttribute("tabindex", "0");
+          frame.setAttribute("aria-label", "Preview AI Fitness Coach App");
+          frame.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            openGallery(liannaPreviewGallery, 0);
+          });
+          frame.addEventListener("keydown", (event) => {
+            if (event.key !== "Enter" && event.key !== " ") return;
+            event.preventDefault();
+            openGallery(liannaPreviewGallery, 0);
+          });
+        }
+      }
 
       const card = image.closest(".framer-p3jkcu-container") || frame?.parentElement;
       if (card) card.classList.add("oren-tours-dashboard-card");
@@ -453,6 +870,7 @@
         </div>
         <div class="oren-gallery-meta">
           <span class="oren-gallery-counter"></span>
+          <span class="oren-gallery-caption"></span>
         </div>
         <div class="oren-gallery-thumbs" aria-label="Gallery pages"></div>
       </section>
@@ -507,6 +925,8 @@
 
   function moveGallery(direction) {
     if (!activeGallery || !activeGallery.images.length) return;
+    if (activeGallery.variant === "content" || activeGallery.images.length <= 1) return;
+
     const spreadSize = getGallerySpreadSize(activeGallery);
     const nextIndex = activeGalleryIndex + direction * spreadSize;
     if (nextIndex < 0) {
@@ -546,11 +966,18 @@
       modal.querySelector(".oren-gallery-image-tertiary"),
     ];
     const counter = modal.querySelector(".oren-gallery-counter");
+    const caption = modal.querySelector(".oren-gallery-caption");
     const thumbs = modal.querySelector(".oren-gallery-thumbs");
     const spreadSize = getGallerySpreadSize(activeGallery);
     const currentSpread = activeGallery.images.slice(activeGalleryIndex, activeGalleryIndex + spreadSize);
+    const currentItem = activeGallery.items && activeGallery.items[activeGalleryIndex];
 
     modal.dataset.gallerySpreadSize = String(spreadSize);
+    if (activeGallery.variant) {
+      modal.dataset.galleryVariant = activeGallery.variant;
+    } else {
+      delete modal.dataset.galleryVariant;
+    }
     title.textContent = activeGallery.title || "";
     subtitle.textContent = activeGallery.subtitle || "";
     award.textContent = activeGallery.award || "";
@@ -563,6 +990,11 @@
     counter.textContent = currentSpread.length > 1
       ? `${activeGalleryIndex + 1}-${activeGalleryIndex + currentSpread.length} / ${activeGallery.images.length}`
       : `${activeGalleryIndex + 1} / ${activeGallery.images.length}`;
+    if (caption) {
+      caption.textContent = currentItem
+        ? `${currentItem.category} · ${currentItem.title}`
+        : "";
+    }
     thumbs.innerHTML = activeGallery.images
       .map(
         (src, index) => `
@@ -986,11 +1418,14 @@
 
   function replaceVisualAssets(root) {
     replaceImages(root);
+    replaceAiColorMatchCard(root);
+    replacePixverseCard(root);
     replaceContentGrowthBashpayCard(root);
     replaceContentGrowthLogisticsCard(root);
     replaceContentGrowthMediaMapCard(root);
     replaceToursHeroImage(root);
     replaceToursDashboardCard(root);
+    replaceKaitouCard(root);
     hideLeftFinishTourCard(root);
     enhanceGalleries(root);
   }

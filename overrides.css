@@ -34,32 +34,33 @@ html[data-editable-mirror="ready"] body {
 .oren-tours-dashboard-image {
   width: 100% !important;
   height: 100% !important;
-  object-fit: cover !important;
+  object-fit: contain !important;
   object-position: 50% 50% !important;
-  border-radius: 14px !important;
+  border-radius: 0 !important;
 }
 
 .oren-tours-dashboard-card {
-  width: 570px !important;
-  height: 329px !important;
-  translate: -92px 0 !important;
+  width: 620px !important;
+  height: 380px !important;
+  translate: -116px -12px !important;
 }
 
 .oren-tours-dashboard-frame {
   width: 100% !important;
   height: 100% !important;
-  padding: 8px !important;
-  border-radius: 20px !important;
-  background: #fff !important;
-  overflow: hidden !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
 }
 
 .oren-tours-dashboard-frame .framer-lgbb3e {
   width: 100% !important;
   height: 100% !important;
-  background: #f6f7f4 !important;
-  border-radius: 14px !important;
-  overflow: hidden !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
 }
 
 [data-editable-replaced-image="true"] {
@@ -67,26 +68,28 @@ html[data-editable-mirror="ready"] body {
 }
 
 .oren-ai-color-match-card {
-  width: 430px !important;
-  height: 322px !important;
-  transform: rotate(-2.5deg) translateX(24px) translateY(-8px) !important;
+  width: 535px !important;
+  height: 400px !important;
+  transform: rotate(-2.5deg) translateX(45px) translateY(-14px) !important;
   transform-origin: 50% 50% !important;
 }
 
 .oren-ai-color-match-frame {
   width: 100% !important;
   height: 100% !important;
-  padding: 6px !important;
-  border-radius: 18px !important;
-  background: #fff !important;
-  overflow: hidden !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
 }
 
 .oren-ai-color-match-frame .framer-lgbb3e {
   width: 100% !important;
   height: 100% !important;
-  overflow: hidden !important;
-  border-radius: 12px !important;
+  background: transparent !important;
+  overflow: visible !important;
+  border-radius: 0 !important;
 }
 
 .oren-ai-color-match-image {
@@ -94,7 +97,7 @@ html[data-editable-mirror="ready"] body {
   height: 100% !important;
   object-fit: contain !important;
   object-position: 50% 50% !important;
-  border-radius: 12px !important;
+  border-radius: 0 !important;
 }
 
 .oren-ai-lab-poster-card {
@@ -128,6 +131,39 @@ html[data-editable-mirror="ready"] body {
   border-radius: 12px !important;
 }
 
+.oren-kaitou-card {
+  width: 420px !important;
+  height: 420px !important;
+  transform: rotate(-2deg) translateX(-66px) translateY(94px) !important;
+  transform-origin: 50% 50% !important;
+}
+
+.oren-kaitou-frame {
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+.oren-kaitou-frame .framer-lgbb3e {
+  width: 100% !important;
+  height: 100% !important;
+  overflow: visible !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+.oren-kaitou-image {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: 50% 50% !important;
+  border-radius: 0 !important;
+}
+
 .oren-ai-scene-card {
   width: 360px !important;
   height: 360px !important;
@@ -138,26 +174,27 @@ html[data-editable-mirror="ready"] body {
 .oren-ai-scene-frame {
   width: 100% !important;
   height: 100% !important;
-  padding: 6px !important;
-  border-radius: 18px !important;
-  background: #fff !important;
-  overflow: hidden !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
 }
 
 .oren-ai-scene-frame .framer-lgbb3e {
   width: 100% !important;
   height: 100% !important;
-  overflow: hidden !important;
-  border-radius: 12px !important;
-  background: #07090b !important;
+  overflow: visible !important;
+  border-radius: 0 !important;
+  background: transparent !important;
 }
 
 .oren-ai-scene-image {
   width: 100% !important;
   height: 100% !important;
-  object-fit: cover !important;
+  object-fit: contain !important;
   object-position: 50% 50% !important;
-  border-radius: 12px !important;
+  border-radius: 0 !important;
 }
 
 [data-framer-name="Value block"] .framer-1f3xht8-container,
@@ -507,6 +544,54 @@ html[data-editable-mirror="ready"] body {
   cursor: zoom-in;
   overflow: clip !important;
   border-radius: 20px !important;
+}
+
+.oren-ai-color-match-preview-trigger.oren-gallery-trigger {
+  overflow: visible !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.oren-ai-color-match-preview-trigger[data-border="true"]::after {
+  content: none !important;
+  border: 0 !important;
+}
+
+.oren-pixverse-preview-trigger.oren-gallery-trigger {
+  overflow: visible !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.oren-pixverse-preview-trigger[data-border="true"]::after {
+  content: none !important;
+  border: 0 !important;
+}
+
+.oren-lianna-preview-trigger.oren-gallery-trigger {
+  overflow: visible !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.oren-lianna-preview-trigger[data-border="true"]::after {
+  content: none !important;
+  border: 0 !important;
+}
+
+.oren-kaitou-preview-trigger.oren-gallery-trigger {
+  overflow: visible !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.oren-kaitou-preview-trigger[data-border="true"]::after {
+  content: none !important;
+  border: 0 !important;
 }
 
 .oren-gallery-trigger[data-oren-gallery-trigger-for="JCVH1U71jmRJSgalqgIDAfuO8.png"] {
@@ -952,6 +1037,65 @@ img[data-oren-gallery-key="JiCsfFAbrVrZSX3x7Y9dkgzckI.png"] {
 
 .oren-gallery-modal[data-gallery-spread-size="1"] .oren-gallery-thumbs {
   padding-bottom: 4px;
+}
+
+.oren-gallery-modal:is([data-gallery-variant="evoto-gallery"], [data-gallery-variant="pixverse-gallery"], [data-gallery-variant="lianna-gallery"], [data-gallery-variant="kaitou-gallery"]) .oren-gallery-panel {
+  grid-template-rows: minmax(0, 1fr) auto auto;
+  width: min(820px, calc(100vw - 48px));
+  height: min(920px, calc(100vh - 48px));
+  padding: 18px 20px 14px;
+}
+
+.oren-gallery-modal:is([data-gallery-variant="evoto-gallery"], [data-gallery-variant="pixverse-gallery"], [data-gallery-variant="lianna-gallery"], [data-gallery-variant="kaitou-gallery"]) .oren-gallery-copy {
+  display: none !important;
+}
+
+.oren-gallery-modal:is([data-gallery-variant="evoto-gallery"], [data-gallery-variant="pixverse-gallery"], [data-gallery-variant="lianna-gallery"], [data-gallery-variant="kaitou-gallery"]) .oren-gallery-stage {
+  padding: 10px 68px;
+  background: rgba(0, 0, 0, 0.34);
+}
+
+.oren-gallery-modal:is([data-gallery-variant="evoto-gallery"], [data-gallery-variant="pixverse-gallery"], [data-gallery-variant="lianna-gallery"], [data-gallery-variant="kaitou-gallery"]) .oren-gallery-image {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: auto;
+  border-radius: 18px;
+}
+
+.oren-gallery-modal:is([data-gallery-variant="evoto-gallery"], [data-gallery-variant="pixverse-gallery"], [data-gallery-variant="lianna-gallery"], [data-gallery-variant="kaitou-gallery"]) .oren-gallery-thumb {
+  width: 42px;
+  height: 68px;
+}
+
+.oren-gallery-modal:is([data-gallery-variant="evoto-gallery"], [data-gallery-variant="pixverse-gallery"], [data-gallery-variant="lianna-gallery"], [data-gallery-variant="kaitou-gallery"]) .oren-gallery-thumbs {
+  justify-content: center;
+  max-height: 78px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.oren-gallery-modal:is([data-gallery-variant="evoto-gallery"], [data-gallery-variant="pixverse-gallery"], [data-gallery-variant="lianna-gallery"], [data-gallery-variant="kaitou-gallery"]) .oren-gallery-meta {
+  align-items: center;
+  gap: 10px;
+  min-height: 24px;
+  font-size: 14px;
+}
+
+.oren-gallery-modal:is([data-gallery-variant="evoto-gallery"], [data-gallery-variant="pixverse-gallery"], [data-gallery-variant="lianna-gallery"], [data-gallery-variant="kaitou-gallery"]) .oren-gallery-counter {
+  flex: 0 0 auto;
+  color: rgba(248, 239, 228, 0.58);
+}
+
+.oren-gallery-modal:is([data-gallery-variant="evoto-gallery"], [data-gallery-variant="pixverse-gallery"], [data-gallery-variant="lianna-gallery"], [data-gallery-variant="kaitou-gallery"]) .oren-gallery-caption {
+  max-width: min(560px, calc(100vw - 220px));
+  overflow: hidden;
+  color: rgba(248, 239, 228, 0.88);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .oren-gallery-image[hidden] {

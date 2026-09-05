@@ -61,7 +61,6 @@
         window.__OREN_APPLY_META__ = applyMeta;
         lockTitleProperty();
         applyMeta();
-        document.documentElement.dataset.editableMirror = "ready";
         ["readystatechange", "DOMContentLoaded", "load"].forEach((eventName) => {
           window.addEventListener(eventName, applyMeta, { passive: true });
         });
@@ -73,7 +72,7 @@
         }
       })();
     </script>
-    <style id="editable-prehide">html[data-editable-mirror="loading"] body{opacity:1!important}html[data-editable-mirror="ready"] body{opacity:1;transition:opacity 120ms ease}</style>
+    <style id="editable-prehide">html[data-editable-mirror="loading"] body{opacity:0!important}html[data-editable-mirror="ready"] body{opacity:1;transition:opacity 120ms ease}</style>
     
     
     <!-- Start of headStart -->
